@@ -42,7 +42,9 @@
         color:"#E2D96E",
         defaults: {
             name: {value:""},
-            conditions: [],
+            conditions: [{
+
+            }],
             complete: {value:"false", required:true},
             targetType: {value:undefined}
         },
@@ -82,6 +84,14 @@
                 ) {
                     $("#node-input-typed-complete").typedInput('value','payload');
                 }
+            });
+
+            // The conditions editable list
+            $("#node-input-conditions-container").css('min-height','150px').css('min-width','450px').editableList({
+                addItem: function(container, i, opt) {
+                },
+                removable: true,
+                sortable: true
             });
         },
         oneditresize: function() {
