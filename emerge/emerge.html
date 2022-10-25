@@ -1,0 +1,60 @@
+<script type="text/x-red" data-template-name="string">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-merge"><i class="fa fa-sign-in"></i> <span>Merge</span></label>
+        <input type="text" id="node-input-merge" style="width:70%">
+        <input type="hidden" id="node-input-object">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="string">
+  <p>Merges msg objects until all defined property conditions are met before passing the combined msg along and clearing the internal buffer.</p>
+
+  <p>By default, string <b><i>from</i></b> and <b><i>to</i></b>
+  methods apply to the <code>msg.payload</code> property but may be set to any
+  property of <code>global</code>, <code>flow</code>, or <code>msg</code>
+  contexts.</p>
+
+  <h3>Details</h3>
+  <p>Some details...</p>
+
+  <h3>References</h3>
+  <ul>
+    <li>The official <a href="https://github.com/Steveorevo/node-red-contrib-emerge" target=_blank>node-red-contrib-emerge</a> project on GitHub.</li>
+  </ul>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('emerge',{
+        category: 'sequence',
+        color:"#E2D96E",
+        defaults: {
+            name: {value:""},
+            conditions: [],
+            merge: {value: 'payload'},
+            object: {value: 'msg'},
+        },
+        inputs:1,
+        outputs:1,
+        icon: "fa-elipsis-h",
+        label: function() {
+            return this.name || "emerge";
+        },
+        labelStyle: function() {
+            return this.name ? "node_label_italic" : "";
+        },
+        oneditprepare: function() {
+            
+        },
+        oneditresize: function() {
+
+        },
+        oneditsave: function() {
+
+        }
+    });
+</script>
