@@ -1,17 +1,18 @@
-<script type="text/x-red" data-template-name="emerge">
+<script type="text/html" data-template-name="emerge">
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
 
     <div class="form-row">
-        <label for="node-input-merge"><i class="fa fa-sign-in"></i> <span>Merge</span></label>
-        <input type="text" id="node-input-merge" style="width:70%">
-        <input type="hidden" id="node-input-object">
+        <label for="node-input-typed-complete"><i class="fa fa-sign-in"></i> Merge</label>
+        <input id="node-input-typed-complete" type="text" style="width: 70%">
+        <input id="node-input-complete" type="hidden">
+        <input id="node-input-targetType" type="hidden">
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="emerge">
+<script type="text/html" data-help-name="emerge">
   <p>Merges msg objects until all defined property conditions are met before passing the combined msg along and clearing the internal buffer.</p>
 
   <p>By default, string <b><i>from</i></b> and <b><i>to</i></b>
@@ -35,12 +36,12 @@
         defaults: {
             name: {value:""},
             conditions: [],
-            merge: {value: 'payload'},
-            object: {value: 'msg'},
+            complete: {value:"false", required:true},
+            targetType: {value:undefined}
         },
         inputs:1,
         outputs:1,
-        icon: "fa-elipsis-h",
+        icon: "font-awesome/fa-ellipsis-h",
         label: function() {
             return this.name || "emerge";
         },
@@ -48,7 +49,33 @@
             return this.name ? "node_label_italic" : "";
         },
         oneditprepare: function() {
-            
+
+            // The message object to be merged
+            var fullType = {
+                value: "full",
+                label: RED._("node-red:debug.msgobj"),
+                hasValue: false
+            };
+            $("#node-input-typed-complete").typedInput({
+                default: "msg",
+                types:['msg', fullType],
+                typeField: $("#node-input-targetType")
+            });
+            if ((this.targetType === "full") || this.complete === "true" || this.complete === true) {
+                // show complete message object
+                $("#node-input-typed-complete").typedInput('type','full');
+            } else {
+                var property = (!this.complete||(this.complete === "false")) ? "payload" : this.complete+"";
+                $("#node-input-typed-complete").typedInput('type','msg');
+                $("#node-input-typed-complete").typedInput('value',property);
+            }
+            $("#node-input-typed-complete").on('change',function() {
+                if ($("#node-input-typed-complete").typedInput('type') === 'msg' &&
+                    $("#node-input-typed-complete").typedInput('value') === ''
+                ) {
+                    $("#node-input-typed-complete").typedInput('value','payload');
+                }
+            });
         },
         oneditresize: function() {
 
