@@ -118,10 +118,15 @@
                         class: "node-input-condition-type",
                         style: "width:118px;margin-right:10px;"
                     }).appendTo(row);
-
                     for (var i=0; i < operators.length; i++) {
                       selectField.append($("<option></option>").val(operators[i].name).text(operators[i].label));
                     }
+
+                    var propCompare = $('<input/>',{
+                        class:"node-input-condition-property-value",
+                        type:"text",
+                        style: "width:118px;margin-right:10px;"
+                    }).appendTo(row).typedInput({default:'msg',types:['msg','flow','global','str','num','bool','json','bin','date','env']});
                 },
                 removable: true,
                 sortable: true
