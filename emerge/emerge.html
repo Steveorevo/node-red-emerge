@@ -87,8 +87,25 @@
             });
 
             // The conditions editable list
-            $("#node-input-conditions-container").css('min-height','150px').css('min-width','450px').editableList({
+            var operators = [
+                {
+                    name: "equal",
+                    params: [
+                        {
+                            default: 'msg',
+                            types: ['msg', 'flow', 'global'],
+                            placeholder: 'value'
+                        }
+                    ]
+                }
+            ];
+            $("#node-input-conditions-container").css('min-height','300px').css('min-width','450px').editableList({
                 addItem: function(container, i, opt) {
+                    var row = $('<div/>', {class:"node-input-condition-applied"}).appendTo(container);
+                    var selectField = $('<select/>',{class:"node-input-condition-type",style:"width:165px; margin-right:10px;"}).appendTo(row);
+                    for (var i=0; i < operators.length; i++) {
+                      selectField.append($("<option></option>").val(operators[i].name).text(operators[i].name));
+                    }
                 },
                 removable: true,
                 sortable: true
