@@ -12,7 +12,7 @@
     </div>
 
     <div class="form-row" style="margin-bottom:0;">
-        <label><i class="fa fa-list"></i> Conditions</label>
+        <label><i class="fa fa-list"></i> Until Conditions</label>
     </div>
     <div class="form-row node-input-conditions-container-row">
         <ol id="node-input-conditions-container"></ol>
@@ -100,13 +100,21 @@
                     ]
                 }
             ];
-            $("#node-input-conditions-container").css('min-height','300px').css('min-width','450px').editableList({
+            $("#node-input-conditions-container").css('min-height','150px').css('min-width','450px').editableList({
                 addItem: function(container, i, opt) {
                     var row = $('<div/>', {class:"node-input-condition-applied"}).appendTo(container);
-                    var propValInput = $('<input/>',{class:"node-input-condition-property-value",type:"text"}).appendTo(row)
-                    .typedInput({default:'msg',types:['msg','flow','global']});
                     
-                    var selectField = $('<select/>',{class:"node-input-condition-type",style:"width:165px; margin-right:10px;"}).appendTo(row);
+                    var propValInput = $('<input/>',{
+                        class:"node-input-condition-property-value",
+                        type:"text",
+                        style: "width:180px;margin-right:10px;"
+                    }).appendTo(row).typedInput({default:'msg',types:['msg','flow','global']});
+                    
+                    var selectField = $('<select/>', {
+                        class: "node-input-condition-type",
+                        style: "width:118px;margin-right:10px;"
+                    }).appendTo(row);
+
                     for (var i=0; i < operators.length; i++) {
                       selectField.append($("<option></option>").val(operators[i].name).text(operators[i].label));
                     }
