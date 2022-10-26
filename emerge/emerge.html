@@ -11,7 +11,7 @@
         <input id="node-input-targetType" type="hidden">
     </div>
 
-    <div class="form-row" style="margin-bottom:0;">
+    <div class="form-row" style="margin-bottom:0;white-space:nowrap;">
         <label><i class="fa fa-list"></i> Until Conditions</label>
     </div>
     <div class="form-row node-input-conditions-container-row">
@@ -88,17 +88,21 @@
 
             // The conditions editable list
             var operators = [
-                {
-                    name: "equal",
-                    label: "==",
-                    params: [
-                        {
-                            default: 'msg',
-                            types: ['msg', 'flow', 'global'],
-                            placeholder: 'value'
-                        }
-                    ]
-                }
+                { name: "eq", label: "==" },
+                { name: "neq", label: "!=" },
+                { name: "lt", label: "<" },
+                { name: "lte", label: "<=" },
+                { name: "gt", label: ">" },
+                { name: "gte", label: ">=" },
+                { name: "gte", label: ">=" },
+                { name: "cont", label: "contains" },
+                { name: "ncont", label: "not contains" },
+                { name: "true", label: "is true" },
+                { name: "false", label: "is false" },
+                { name: "null", label: "is null" },
+                { name: "nnull", label: "is not null" },
+                { name: "undef", label: "is undefined" },
+                { name: "nundef", label: "is not undefined" }
             ];
             $("#node-input-conditions-container").css('min-height','150px').css('min-width','450px').editableList({
                 addItem: function(container, i, opt) {
