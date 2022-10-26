@@ -104,7 +104,7 @@
                 addItem: function(container, i, opt) {
                     var row = $('<div/>', {class:"node-input-condition-applied"}).appendTo(container);
                     var propValInput = $('<input/>',{class:"node-input-condition-property-value",type:"text"}).appendTo(row)
-                    .typedInput({default:defaultType||'msg',types:['msg','flow','global']});
+                    .typedInput({default:'msg',types:['msg','flow','global']});
                     
                     var selectField = $('<select/>',{class:"node-input-condition-type",style:"width:165px; margin-right:10px;"}).appendTo(row);
                     for (var i=0; i < operators.length; i++) {
