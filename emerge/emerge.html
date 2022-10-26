@@ -111,12 +111,12 @@
                     var propValInput = $('<input/>',{
                         class:"node-input-condition-property-value",
                         type:"text",
-                        style: "width:135px;margin-right:10px;"
+                        style: "width:33%;margin-right:8px;"
                     }).appendTo(row).typedInput({default:'msg',types:['msg','flow','global']});
                     
                     var selectField = $('<select/>', {
                         class: "node-input-condition-type",
-                        style: "width:110px;margin-right:10px;"
+                        style: "width:110px;margin-right:8px;"
                     }).appendTo(row);
                     for (var i=0; i < operators.length; i++) {
                       selectField.append($("<option></option>").val(operators[i].name).text(operators[i].label));
@@ -125,7 +125,7 @@
                     var propCompare = $('<input/>',{
                         class:"node-input-condition-property-value",
                         type:"text",
-                        style: "width:135px;"
+                        style: "width:33%;"
                     }).appendTo(row).typedInput({default:'str',types:['msg','flow','global','str','num']});
                 },
                 removable: true,
