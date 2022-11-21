@@ -1,5 +1,5 @@
 {
-    "name": "node-red-emerge",
+    "name": "@steveorevo/node-red-emerge",
     "version": "1.0.0",
     "description": "A node that merges msg objects until all defined properties are present / conditions met before passing the combined msg along.",
     "author": "Stephen J. Carnam <steveorevo@gmail.com>",

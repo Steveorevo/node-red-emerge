@@ -11,7 +11,7 @@ or
 
 Run the following command in your Node-RED user directory (typically ~/.node-red):
 
-    npm install @Steveorevo/node-red-emerge
+    npm install @steveorevo/node-red-emerge
 
 The emerge node will appear in the palette under the sequence group.
 
