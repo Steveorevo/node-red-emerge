@@ -5,7 +5,7 @@ The emerge node merges incoming msg objects into an internal buffer until all ma
 Often times we need to submit a msg to a node with various properties present and filled out; these properties may come from various asynchronous and parallel flow segments. Counting messages and waiting to gather all these values into a single msg can be a burden. The emerge node can simplify that burden be combining msgs until all the needed properties are present and/or meet the conditional requirements before passing the message along. 
 
 ### How to install
-You can install emerge via [Node-RED's built in palette manager](https://nodered.org/docs/user-guide/editor/palette/manager) and searching for @Steveorevo/node-red-emerge
+You can install emerge via [Node-RED's built in palette manager](https://nodered.org/docs/user-guide/editor/palette/manager) and searching for `node-red-emerge`
 
 or 
 
