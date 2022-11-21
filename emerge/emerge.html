@@ -1,56 +1,219 @@
+<style>
+    .red-ui-tray-content #dialog-form {
+    white-space:nowrap;
+}
+.full-row .red-ui-typedInput-container {
+    min-width: 70%;
+}
+.col input {
+    min-width: 100%;
+}
+.sml-lbl {
+    height: 66px;
+}
+.sml-lbl label {
+    font-size: smaller;
+    margin-bottom: 0px;
+    display: block!important;
+}
+.reg-lbl label {
+    white-space: nowrap;
+    margin-top: 5px;
+    height: 0px;
+}
+.red-ui-editor .form-row label.full-lbl {
+    white-space: normal;
+    width: 100%;
+}
+.col {
+    float: left;
+    margin-right: 5px;
+    min-height: 36px;
+}
+.col .red-ui-typedInput-container {
+    width: 100%!important;
+}
+.col-50 {
+    width: 50%;
+}
+.col-33 {
+    width: 33%;
+}
+.col-66 {
+    width: 66%;
+}
+.col-25 {
+    width: 25%;
+}
+.col-75 {
+    width: 75%;
+}
+.col-100 .red-ui-typedInput-container {
+    width: 70%!important;
+}
+.col-100.no-label .red-ui-typedInput-container {
+    width: 100%!important;
+}
+.txtarea {
+    padding-bottom: 26px;
+}
+.txtarea label {
+    vertical-align: top;
+    margin-top: 3px;
+}
+.txtarea  textarea {
+    width: 70%;
+    margin-bottom: -28px!important;
+}
+.btn-regular {
+    margin-bottom: 14px!important;
+}
+.red-ui-editableList-item-content {
+    display: inline-block;
+    margin-bottom: -6px;
+    width: -moz-available;
+    width: -webkit-fill-available;
+    width: fill-available;
+}
+.red-ui-editableList-item-content .sml-lbl {
+    height: auto;
+}
+
+</style>
 <script type="text/html" data-template-name="emerge">
-    <div class="form-row">
+        <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
-
-    <div class="form-row">
-        <label for="node-input-typed-complete"><i class="fa fa-sign-in"></i> Merge</label>
-        <input id="node-input-typed-complete" type="text" style="width: 70%">
-        <input id="node-input-complete" type="hidden">
-        <input id="node-input-targetType" type="hidden">
-    </div>
-
-    <div class="form-row" style="margin-bottom:0;white-space:nowrap;">
-        <label><i class="fa fa-list"></i> Until Conditions</label>
-    </div>
-    <div class="form-row node-input-conditions-container-row">
-        <ol id="node-input-conditions-container"></ol>
-    </div>
+    <div id="node-props" style="width: 460px;">
+        
+        <div class="form-row rgroup" style="margin-bottom:0;">
+            <label for="node-input-grpRules"><i class="fa fa-gavel"></i> Rules</label>
+        </div>
+        <div class="form-row node-input-grpRules-container-row">
+            <ol id="node-input-grpRules-container"></ol>
+        </div>
+        <div id="rgroup-grpRules-template" style="display:none">
+            <div class="form-row">
+                <div class="col col-33 sml-lbl no-label">
+                    
+                    <input type="text" id="node-input-ruleProperty" placeholder="">
+                    <input type="hidden" id="node-input-rulePropertyType"value="msg">
+                </div><!--col-->
+                <div class="col col-25 sml-lbl">
+                    
+                    <input type="text" id="node-input-ruleOperation">
+                </div><!--col-->
+                <div style="margin-right:-10px;" class="col col-33 sml-lbl no-label">
+                    
+                    <input type="text" id="node-input-ruleValue" placeholder="">
+                    <input type="hidden" id="node-input-ruleValueType"value="str">
+                </div><!--col-->
+            </div><!--form-row-->
+        </div><!--form-row rgroup-...-template-->
+        <div class="form-row">
+            <div class="col col-33 reg-lbl">
+                <label class="full-lbl">
+                    <i class="fa fa-hourglass-half"></i> <span>Timeout (seconds)</span>
+                </label>
+            </div><!--col-->
+            <div style="margin-right:-5px;" class="col col-66 sml-lbl no-label">
+                
+                <input type="text" id="node-input-rulesTimeout">
+                <input type="hidden" id="node-input-ruleValueType"value="str">
+            </div><!--col-->
+        </div><!--form-row-->
+        <div class="form-row">
+            <div class="col col-33 reg-lbl">
+                <label class="full-lbl">
+                    <i class="fa fa-bolt"></i> <span>Timeout Action</span>
+                </label>
+            </div><!--col-->
+            <div style="margin-right:-5px;" class="col col-66 sml-lbl">
+                
+                <input type="text" id="node-input-timeoutAction">
+            </div><!--col-->
+        </div><!--form-row-->
+    </div><!--node-props-->
 </script>
 
 <script type="text/html" data-help-name="emerge">
-  <p>Merges msg objects until all defined property conditions are met before passing the combined msg along and clearing the internal buffer.</p>
+    <p>The <strong>emerge</strong> node merges incoming msg objects into an internal buffer
+    until all matching predefined rules have been met. The merged buffer msg then 'emerges'
+    (is sent) to the output when all rules have been satisfied; after which the buffer is 
+    cleared and merging new incoming msg objects and checking rules is resumed.</p>
 
-  <p>By default, string <b><i>from</i></b> and <b><i>to</i></b>
-  methods apply to the <code>msg.payload</code> property but may be set to any
-  property of <code>global</code>, <code>flow</code>, or <code>msg</code>
-  contexts.</p>
+    <h3>Rules</h3>
+    <p>The rules list allows you to specify conditions to be satisfied before the internally buffered msg
+    is sent. For example, you can watch the msg object for specific properties to be present before 
+    sending the msg along; this is useful if you have multiple asynchronous operations fetching data
+    that you need to submit to a node as one msg.</p>
+    <p>You are not limited to watching msg properties; the rules list can also check for flow and global properties
+    to have specific conditions before sending the msg buffer along.</p>
+    
+    <p><strong><i>Note:</strong> rules are only
+    checked when a msg is received. Changes to global and flow values can be used to allow or prevent the message
+    buffer from sending a msg but cannot 'trigger' the message buffer to send.</i></p>
+    
+    <p>Rule logic conditions are as follows:</p>
 
-  <h3>Details</h3>
-  <p>Some details...</p>
+    <ul>
+        <li><strong>==</strong> - A property is equal to value on the right. </li>
+        <li><strong>!=</strong> - A property is not equal to the value on the right. </li>
+        <li><strong>&gt;</strong> - A property is greater than the value on the right.</li>
+        <li><strong>&lt;</strong> - A property is less than the value on the right. </li>
+        <li><strong>empty</strong> - A property is empty (null, undefined, or an empty string).</li>
+        <li><strong>not empty</strong> - A property is not empty (null, undefined, or an empty string). </li>
+        <li><strong>size is ==</strong> - A property's length (string or number of array elements) is equal to the value on the right. </li>
+        <li><strong>size is &gt;</strong> - A property's length (string or number of array elements) is greater than the value on the right.  </li>
+        <li><strong>size is &lt;</strong> - A property's length (string or number of array elements) is less than the value on the right.  </li>
+    </ul>
+    
+    <h3>Timeout Action</h3>
+    <p>An optional timeout behavior can be set in seconds and determine the maximum number of seconds past since the node
+        received its last msg. The behavior of the timeout can be set with
+    the timeout action property:</p>
+    <ul>
+        <li><strong>Ignore timeout</strong> - No timeout action.</li>
+        <li><strong>Clear and restart</strong> - Clear the internal msg buffer and restart merging incoming msg objects.</li>
+        <li><strong>Trigger catch node</strong> - Error out by triggering any catch node with the current msg buffer and restart merging.</li>
+    </ul>
 
-  <h3>References</h3>
-  <ul>
-    <li>The official <a href="https://github.com/Steveorevo/node-red-contrib-emerge" target=_blank>node-red-contrib-emerge</a> project on GitHub.</li>
-  </ul>
+    <h3>Outputs</h3>
+    <ol class="node-ports">
+        <li>Standard output
+            <dl class="message-properties">
+                <dt>msg <span class="property-type">object</span></dt>
+                <dd>the internal buffer of merged msg objects sent when all rule conditions have been satisfied.</dd>
+            </dl>
+        </li>
+    </ol>
+
+    <h3>References</h3>
+    <ul>
+        <li>You can find the official <a href="https://github.com/steveorevo/node-red-emerge">emerge node public repository here</a></li>
+    </ul>
+    
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('emerge',{
+    RED.nodes.registerType('emerge', {
         category: 'sequence',
-        color:"#E2D96E",
+        color: '#E2D96E',
         defaults: {
             name: {value:""},
-            conditions: [{
-
-            }],
-            complete: {value:"false", required:true},
-            targetType: {value:undefined}
+                        grpRules:[],
+            ruleProperty: {value:"payload"},
+            rulePropertyType: {value:"msg"},
+            ruleOperation: {value:"=="},
+            ruleValue: {value:""},
+            ruleValueType: {value:"str"},
+            rulesTimeout: {value:30},
+            timeoutAction: {value:"1"}
         },
-        inputs:1,
-        outputs:1,
-        icon: "font-awesome/fa-ellipsis-h",
+        inputs: 1,
+        outputs: 1,
+        icon: "font-awesome/fa-angle-double-right",
         label: function() {
             return this.name || "emerge";
         },
@@ -58,85 +221,224 @@
             return this.name ? "node_label_italic" : "";
         },
         oneditprepare: function() {
+            
+            // Prepare editableList for grpRules
+            $("#node-input-grpRules-container").css('height', '300px').editableList({
+                addItem: function (container, i, opt) {
+                    let repeatingFields = [
+                        {
+                            "field_name": "ruleProperty",
+                            "field_default_type": "msg",
+                            "field_types": [
+                                "msg",
+                                "flow",
+                                "global"
+                            ],
+                            "field_default": "payload"
+                        },
+                        {
+                            "field_name": "ruleOperation",
+                            "field_types": [
+                                {
+                                    "value": "ruleOperation",
+                                    "multiple": false,
+                                    "options": [
+                                        {
+                                            "value": "==",
+                                            "label": "=="
+                                        },
+                                        {
+                                            "value": "!=",
+                                            "label": "!="
+                                        },
+                                        {
+                                            "value": "gt",
+                                            "label": ">"
+                                        },
+                                        {
+                                            "value": "lt",
+                                            "label": "<"
+                                        },
+                                        {
+                                            "value": "empty",
+                                            "label": "empty"
+                                        },
+                                        {
+                                            "value": "!empty",
+                                            "label": "not empty"
+                                        },
+                                        {
+                                            "value": "sz=",
+                                            "label": "size is =="
+                                        },
+                                        {
+                                            "value": "szgt",
+                                            "label": "size is >"
+                                        },
+                                        {
+                                            "value": "szlt",
+                                            "label": "size is <"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "field_default_type": null,
+                            "field_default": "=="
+                        },
+                        {
+                            "field_name": "ruleValue",
+                            "field_default_type": "str",
+                            "field_types": [
+                                "str",
+                                "num",
+                                "bool",
+                                "msg",
+                                "flow",
+                                "global"
+                            ],
+                            "field_default": ""
+                        }
+                    ];
+                    let html = $('#rgroup-grpRules-template').html();
+                    repeatingFields.forEach(function(rf) {
+                        let fniType = "grpRules" + rf.field_name + "Type" + String(i).padStart(2, '0');
+                        html = html.replaceAll('id="node-input-' + rf.field_name + "Type" + '"', 'id="node-input-' + fniType + '"');
+                        let fni = "grpRules" + rf.field_name + String(i).padStart(2, '0');
+                        html = html.replaceAll('id="node-input-' + rf.field_name + '"', 'id="node-input-' + fni + '"');
+                        html = html.replaceAll('for="node-input-' + rf.field_name + '"', 'for="node-input-' + fni + '"');
+                        container.html(html);
+                    });
+                    repeatingFields.forEach(function (rf) {
+                        let fni = "grpRules" + rf.field_name + String(i).padStart(2, '0');
+                        if (rf.field_types != '') {
+                            let fniType = "grpRules" + rf.field_name + "Type" + String(i).padStart(2, '0');
+                            $("#node-input-" + fni).typedInput({
+                                type: rf.field_default_type,
+                                types: rf.field_types,
+                                typeField: "#node-input-" + fniType
+                            });
+                        }else if(rf.hasOwnProperty('field_min')) {
+                            $("#node-input-" + fni).spinner({ min: rf.field_min, max: rf.field_max });
+                        }
 
-            // The message object to be merged
-            var fullType = {
-                value: "full",
-                label: RED._("node-red:debug.msgobj"),
-                hasValue: false
-            };
-            $("#node-input-typed-complete").typedInput({
-                default: "msg",
-                types:['msg', fullType],
-                typeField: $("#node-input-targetType")
-            });
-            if ((this.targetType === "full") || this.complete === "true" || this.complete === true) {
-                // show complete message object
-                $("#node-input-typed-complete").typedInput('type','full');
-            } else {
-                var property = (!this.complete||(this.complete === "false")) ? "payload" : this.complete+"";
-                $("#node-input-typed-complete").typedInput('type','msg');
-                $("#node-input-typed-complete").typedInput('value',property);
-            }
-            $("#node-input-typed-complete").on('change',function() {
-                if ($("#node-input-typed-complete").typedInput('type') === 'msg' &&
-                    $("#node-input-typed-complete").typedInput('value') === ''
-                ) {
-                    $("#node-input-typed-complete").typedInput('value','payload');
-                }
-            });
-
-            // The conditions editable list
-            var operators = [
-                { name: "eq", label: "==" },
-                { name: "neq", label: "!=" },
-                { name: "lt", label: "<" },
-                { name: "lte", label: "<=" },
-                { name: "gt", label: ">" },
-                { name: "gte", label: ">=" },
-                { name: "gte", label: ">=" },
-                { name: "cont", label: "contains" },
-                { name: "ncont", label: "not contains" },
-                { name: "true", label: "is true" },
-                { name: "false", label: "is false" },
-                { name: "null", label: "is null" },
-                { name: "nnull", label: "is not null" },
-                { name: "undef", label: "is undefined" },
-                { name: "nundef", label: "is not undefined" }
-            ];
-            $("#node-input-conditions-container").css('min-height','150px').css('min-width','450px').editableList({
-                addItem: function(container, i, opt) {
-                    var row = $('<div/>', {class:"node-input-condition-applied"}).appendTo(container);
-                    
-                    var propValInput = $('<input/>',{
-                        class:"node-input-condition-property-value",
-                        type:"text",
-                        style: "width:33%;margin-right:8px;"
-                    }).appendTo(row).typedInput({default:'msg',types:['msg','flow','global']});
-                    
-                    var selectField = $('<select/>', {
-                        class: "node-input-condition-type",
-                        style: "width:110px;margin-right:8px;"
-                    }).appendTo(row);
-                    for (var i=0; i < operators.length; i++) {
-                      selectField.append($("<option></option>").val(operators[i].name).text(operators[i].label));
-                    }
-
-                    var propCompare = $('<input/>',{
-                        class:"node-input-condition-property-value",
-                        type:"text",
-                        style: "width:33%;"
-                    }).appendTo(row).typedInput({default:'str',types:['msg','flow','global','str','num']});
+                        // Restore entry
+                        if (Object.keys(opt).length != 0) {
+                            if ($("#node-input-" + fni).attr('type') == 'hidden') {
+                                $("#node-input-" + fni).typedInput('type', opt[rf.field_name + 'Type']);
+                                $("#node-input-" + fni).typedInput('value', opt[rf.field_name]);
+                            }else{
+                                if ($("#node-input-" + fni).attr('type') == 'checkbox') {
+                                    $("#node-input-" + fni).prop('checked', opt[rf.field_name]);
+                                }else{
+                                    $("#node-input-" + fni).val(opt[rf.field_name]);
+                                }
+                            }
+                        }else{
+                            if ($("#node-input-" + fni).attr('type') == 'hidden') {
+                                $("#node-input-" + fni).typedInput('value', rf.field_default);
+                            } else {
+                                if ($("#node-input-" + fni).attr('type') != 'checkbox') {
+                                    $("#node-input-" + fni).val(rf.field_default);
+                                }
+                            }
+                        }
+                    });
                 },
-                removable: true,
-                sortable: true
+                // sortItems: function (items) {
+                //    
+                // },
+                sortable: true,
+                removable: true
+            });
+
+            // Load prior editableList data for grpRules
+            if (this.grpRules) {
+                this.grpRules.forEach(function (m) {
+                    $('#node-input-grpRules-container').editableList('addItem', m);
+                });
+            }
+
+            // Prepare spinner rulesTimeout
+            $("#node-input-rulesTimeout").spinner({ min: 1, max: 3600 });
+            // Prepare selectbox timeoutAction
+            $("#node-input-timeoutAction").typedInput({
+                types: [
+                    {
+                        value: "timeoutAction",
+                        
+                        options: [
+                            { "value":"0", "label": "Ignore timeout"},
+                            { "value":"1", "label": "Clear msg and start over"},
+                            { "value":"2", "label": "Trigger catch nodes"}
+                        ]
+                    }
+                ]
+            });
+
+            // Allow dynamic re-size after init. appearance 
+            setTimeout(function () {
+                $('#node-props').css('width', '100%');
+            }, 30);
+
+            // Hide ruleValue on empty/not empty
+            var outputCount = $("#node-input-outputs").val("{}");
+            console.log(outputCount);
+            this.grpRules.forEach(function(r, i) {
+                let ruleOperation = $('#node-input-grpRulesruleOperation' + String(i).padStart(2, '0'));
+                let ruleValue = $('#node-input-grpRulesruleValue' + String(i).padStart(2, '0'));
+                if (r.ruleOperation.indexOf('empty') != -1) {
+                    ruleValue.parent().hide();
+                }else{
+                    ruleValue.parent().show();
+                }
+                ruleOperation.on('change', function(e, t, v) {
+                    if (v.indexOf('empty') != -1) {
+                        ruleValue.parent().hide();
+                    }else{
+                        ruleValue.parent().show();
+                    }
+                });
+                $('#node-input-timeoutAction').on('change', function(e, t, v) {
+                    //if (v == '2') {
+                    //    node.outputs = 2;
+                    //}else{
+                    //    node.outputs = 1;
+                    //}
+                });
             });
         },
         oneditresize: function() {
-
+            
+        
         },
         oneditsave: function() {
+            
+            // Save editableList for grpRules
+            grpRulesItems = $("#node-input-grpRules-container").editableList('items');
+            let grpRules = [];
+            grpRulesItems.each(function(){
+                let entry = {};
+                $(this).find('input[id]').each(function() {
+                    let id = $(this).attr('id').substring(11 + "grpRules".length);
+                    id = id.slice(0, -2);
+                    let v = false;
+                    if ($(this).attr('type') == 'checkbox') {
+                        v = $(this).prop('checked');
+                    }else{
+                        v = $(this).val();
+                    }
+                    entry[id] = v;
+                });
+                grpRules.push(entry);
+            });
+            this.grpRules = grpRules;
+
+        },
+        oneditcancel: function() {
+            
 
         }
     });
+    
+
 </script>
