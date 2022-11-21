@@ -1,0 +1,2767 @@
+[
+    {
+        "id": "9771d13dd19bf60f",
+        "type": "subflow",
+        "name": "use templts.",
+        "info": "If you use any of the code templates, be sure to place this node before it.",
+        "category": "node maker",
+        "in": [
+            {
+                "x": 40,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "ebd81684ada1c31c"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 420,
+                "y": 100,
+                "wires": [
+                    {
+                        "id": "6bb34952a24fe530",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#F3B567",
+        "icon": "font-awesome/fa-file-code-o"
+    },
+    {
+        "id": "ebd81684ada1c31c",
+        "type": "template",
+        "z": "9771d13dd19bf60f",
+        "name": "re-size fix",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "javascript",
+        "syntax": "mustache",
+        "template": "            // Allow dynamic re-size after init. appearance \n            setTimeout(function () {\n                $('#node-props').css('width', '100%');\n            }, 30);",
+        "output": "str",
+        "x": 180,
+        "y": 40,
+        "wires": [
+            [
+                "6bb34952a24fe530"
+            ]
+        ]
+    },
+    {
+        "id": "6bb34952a24fe530",
+        "type": "function",
+        "z": "9771d13dd19bf60f",
+        "name": "compose defaults, othercode",
+        "func": "msg._oneditprepare.push(msg.payload);\n\nString.prototype.delRightMost = function (sFind) {\n    for (var i = this.length; i >= 0; i = i - 1) {\n        var f = this.indexOf(sFind, i);\n        if (f != -1) {\n            return this.substring(0, f);\n            break;\n        }\n    }\n    return this;\n};\nString.prototype.getRightMost = function (sFind) {\n    for (var i = this.length; i >= 0; i = i - 1) {\n        var f = this.indexOf(sFind, i);\n        if (f != -1) {\n            return this.substring(f + sFind.length, f + sFind.length + this.length);\n        }\n    }\n    return this;\n};\nString.prototype.delLeftMost = function (sFind) {\n    for (var i = 0; i < this.length; i = i + 1) {\n        var f = this.indexOf(sFind, i);\n        if (f != -1) {\n            return this.substring(f + sFind.length, f + sFind.length + this.length);\n            break;\n        }\n    }\n    return this;\n};\nString.prototype.getLeftMost = function (sFind) {\n    for (var i = 0; i < this.length; i = i + 1) {\n        var f = this.indexOf(sFind, i);\n        if (f != -1) {\n            return this.substring(0, f);\n            break;\n        }\n    }\n    return this;\n};\nvar indent = \" \".repeat(4);\nvar tabIndent = \"\";\nvar edit_dialog = \" \".repeat(8) + '<div class=\"form-row\">' + \"\\n\";\nvar cTotal = 0;\nvar nItems = 0;\nvar initTab = false;\nvar firstTabName = '';\nvar bInRGroup = false;    \nmsg.edit_dialog.forEach(function(item, index) {\n    if (item.indexOf('\"type\":\"tab_definition\"') == -1 && item.indexOf('form-row rgroup') == -1) {\n        item = item.replace(/^/gm, tabIndent);\n        item = item.replace(/^/gm, tabIndent);\n        if (bInRGroup) {\n            item = item.replace(/^/gm, \" \".repeat(4));\n        }\n    }\n    if (item.indexOf('<div class=\"form-row rgroup\"') > -1) {\n        edit_dialog = edit_dialog.delRightMost('<div class=\"form-row\">').trimEnd() + \"\\n\";\n        item += \" \".repeat(4) + '<div class=\"form-row\">' + \"\\n\";\n        item = item.replace(/^/gm, \" \".repeat(8) + tabIndent).trimEnd() + \"\\n\";\n        bInRGroup = true;\n        edit_dialog += item;\n        return;\n    }\n    if (item.indexOf('<!--form-row rgroup-->') > -1) {\n        edit_dialog = edit_dialog.delRightMost('<div class=\"form-row\">').trimEnd() + \"\\n\";\n        edit_dialog += \" \".repeat(8) + tabIndent + \"</div><!--form-row rgroup-...-template-->\\n\";\n        if (index < msg.edit_dialog.length - 1) {\n            edit_dialog += indent + indent + tabIndent + '<div class=\"form-row\">' + \"\\n\";\n        }\n        bInRGroup = false;\n        return;\n    }\n    if (item.indexOf('\"type\":\"tab_definition\"') > -1) {\n        let tab = JSON.parse(item);\n        if (initTab == false) {\n            \n            // Inject the tab row\n            let r = edit_dialog.getRightMost('<div class=\"form-row\">');\n            edit_dialog = edit_dialog.delRightMost('<div class=\"form-row\">');\n            edit_dialog += '<div class=\"form-row func-tabs-row\">' + r;\n            edit_dialog += indent + indent + indent + '<ul style=\"min-width: 600px; margin-bottom: 20px;\" id=\"func-tabs\"></ul>' + \"\\n\";\n            edit_dialog += indent + indent + \"</div><!--func-tabs-row-->\\n\";\n            edit_dialog += indent + indent + '<div id=\"func-tabs-content\" style=\"min-height: calc(100% - 95px);\">' + \"\\n\";\n\n            // Start first tab\n            edit_dialog += indent + indent + indent + '<div id=\"func-tab-' + tab.name + '\" style=\"display:none\">' + \"\\n\";\n            edit_dialog += indent + indent + indent + indent + '<div class=\"form-row\">' + \"\\n\";\n            tabIndent = \" \".repeat(8);\n\n            // Init tab system\n            let code = \"// Prepare tab system\\n\";\n            code += \"var tabs = RED.tabs.create({\\n\";\n            code += \"    id: 'func-tabs',\\n\";\n            code += \"    onchange: function(tab) {\\n\";\n            code += \"        $('#func-tabs-content').children().hide();\\n\";\n            code += \"        $('#' + tab.id).show();\\n\";\n            code += \"    }\\n\";\n            code += \"});\\n\\n\";\n\n            // Add first tab code\n            code += \"// Add first tab, \" + tab.name + \"\\n\";\n            code += \"tabs.addTab({\\n\";\n            code += \"    id: 'func-tab-\" + tab.name + \"',\\n\";\n            code += \"    iconClass: 'fa fa-\" + tab.icon + \"',\\n\";\n            code += \"    label: '\" + tab.label + \"'\\n\";\n            code += \"});\\n\\n\";\n            firstTabName = tab.name;\n            code = code.replace(/^/gm, \" \".repeat(12));\n            msg._oneditprepare.push(code);\n            initTab = true;\n        }else{\n\n            // Add subsequent tabs \n            let r = edit_dialog.getRightMost('    <div class=\"form-row\"');\n            edit_dialog = edit_dialog.delRightMost('    <div class=\"form-row\"');\n            edit_dialog += \"</div><!--func-tab-tab#-->\\n\"; // close out last tab\n            edit_dialog += \" \".repeat(12) + '<div id=\"func-tab-' + tab.name + '\" style=\"display:none\">' + \"\\n\";\n            edit_dialog += \" \".repeat(16) + '<div class=\"form-row\"' + r;\n\n            // Add additional tab code\n            let code = \"// Add tab, \" + tab.name + \"\\n\";            \n            code += \"tabs.addTab({\\n\";\n            code += \"    id: 'func-tab-\" + tab.name + \"',\\n\";\n            code += \"    iconClass: 'fa fa-\" + tab.icon + \"',\\n\";\n            code += \"    label: '\" + tab.label + \"'\\n\";\n            code += \"});\\n\\n\";\n            code = code.replace(/^/gm, \" \".repeat(12));\n            msg._oneditprepare.push(code);\n        }        \n    }else{\n        if (tabIndent == '') {\n            item = item.replace(/^/gm, indent + indent + indent);\n        }else{\n            item = item.replace(/^/gm, indent);\n        }\n        let c = item.delLeftMost('col-').getLeftMost('\"').getLeftMost(' ');\n        cTotal += Number(c);\n        if (cTotal >= 83) {\n            let m = 5 * nItems;\n            if (m > 0) {\n                item = item.replace(\n                    'class=\"col ',\n                    'style=\"margin-right:-' + m.toString() + 'px;\" class=\"col '\n                );\n            }\n            if (nItems == 3) {\n                let r = edit_dialog.getRightMost('<div class=\"form-row\">');\n                edit_dialog = edit_dialog.delRightMost('<div class=\"form-row\">');\n                edit_dialog += '<div class=\"form-row\" style=\"margin-right:10px;\">' + r;\n            }\n            edit_dialog += item + \"\\n\";\n            if (index < msg.edit_dialog.length - 1) {\n                if (bInRGroup) {\n                    edit_dialog += \" \".repeat(4);\n                }\n                edit_dialog += indent + indent + tabIndent + \"</div><!--form-row-->\\n\";\n                edit_dialog += indent + indent + tabIndent + '<div class=\"form-row\">' + \"\\n\";\n                cTotal = 0;\n                nItems = 0;\n            }\n        } else {\n            edit_dialog += item + \"\\n\";\n            nItems++;\n        }\n    }\n});\nif (initTab) { \n    edit_dialog += \" \".repeat(16) + \"</div><!--form-row-->\\n\";\n    edit_dialog += \" \".repeat(12) + \"</div><!--func-tab-tab#-->\\n\";\n    edit_dialog += \" \".repeat(8) + \"</div><!--func-tabs-content-->\";\n\n    // Activate the first tab if present\n    let code = \" \".repeat(12) + 'tabs.activateTab(\"func-tab-' + firstTabName + '\");' + \"\\n\";\n    msg._oneditprepare.push(code);\n}else{\n    edit_dialog += \" \".repeat(8) + \"</div><!--form-row-->\";\n}\nmsg.edit_dialog = edit_dialog;\n\nlet defaults = '';\nmsg.defaults.forEach(function(item, index) {\n    defaults += \"            \" + item;\n    if (index < msg.defaults.length -1) {\n        defaults += \",\\n\";\n    }else{\n        defaults += \"\\n\";\n    }\n});\nmsg.defaults = defaults;\nmsg.oneditprepare = \"\\n\" + msg._oneditprepare.join(\"\\n\");\nmsg.oneditresize = \"\\n\" + msg._oneditresize.join(\"\\n\");\nmsg.oneditsave = \"\\n\" + msg._oneditsave.join(\"\\n\");\nmsg.oneditcancel = \"\\n\" + msg._oneditcancel.join(\"\\n\");\nmsg.defaults = msg.defaults.slice(0, -1);\nvar othercode = \"\";\nfor (var key in msg._othercode) {\n    var value = msg._othercode[key];\n    othercode += value;\n}\nmsg.othercode = \"\\n\" + othercode;\nmsg.runtimecode = \"\\n\" + msg.runtimecode.replace(/^/gm, \"    \".repeat(4));\nmsg.useTemplates = true;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 240,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "7062e6f741533eb2",
+        "type": "subflow",
+        "name": "field ",
+        "info": "The field node represents an instance of the Node-RED [Inputs field](https://nodered.org/docs/creating-nodes/edit-dialog#inputs). A plain input text box can be achieved with the no “Typed” checkbox or type definition specified. The following properties for defining a field are as follows:\n\n* Layout - The number of columns the label will consume out of a division of four or three equal areas. To align controls on the panel on the same row, ensure the used column space totals to consume an entire row.\n* Field Name - A JavaScript compatible variable name (no spaces hyphens or punctuation).\n* Label - The actual text that will be used when displaying the label.\n* Icon - A font awesome icon that will appear to the left of the label. You can specify the icon name sans any ‘fa’ prefix; i.e. bathtub\n* Default - the optional default contents of the field.\n* Placeholder - displays a grey value in the input field as a suggested or example value.\n* Required - whether the input field is required and must be filled out. True will invoke a basic validation check to ensure the value is supplied. A missing value will cause the node’s appearance to show an “needs configuration” triangle and subsequent message when the user attempts to deploy the flow. Additionally, a red border will appear around any required fields not filled out.\n* Typed - This section allows the field input to have one or more types to be prefixed to the field area and influences the fields display behavior. See the [Node-RED Inputs field for examples](https://nodered.org/docs/creating-nodes/edit-dialog#inputs).\n* Type Definitions - Allows for defining a custom type using JSON. When the above Typed checkbox “Include additional type definition array” is checked, this property becomes relevant. For example, you can create a custom input option such as “the complete msg object” as used in the [debug node](https://nodered.org/docs/user-guide/nodes#debug).\n* Default Type - This string value determines the default type to be selected for the input field when your node’s property panel is first opened. \n",
+        "category": "node maker",
+        "in": [
+            {
+                "x": 40,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "73a3b0f6af6b0aeb"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 560,
+                "y": 260,
+                "wires": [
+                    {
+                        "id": "67eed6e284e28123",
+                        "port": 0
+                    },
+                    {
+                        "id": "eda19645927d3dda",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [
+            {
+                "name": "field_columns",
+                "type": "str",
+                "value": "col-100",
+                "ui": {
+                    "label": {
+                        "en-US": "Layout"
+                    },
+                    "type": "select",
+                    "opts": {
+                        "opts": [
+                            {
+                                "l": {
+                                    "en-US": "full-row"
+                                },
+                                "v": "col-100"
+                            },
+                            {
+                                "l": {
+                                    "en-US": "3/4 row"
+                                },
+                                "v": "col col-75 sml-lbl"
+                            },
+                            {
+                                "l": {
+                                    "en-US": "2/3 row"
+                                },
+                                "v": "col col-66 sml-lbl"
+                            },
+                            {
+                                "l": {
+                                    "en-US": "1/2 row"
+                                },
+                                "v": "col col-50 sml-lbl"
+                            },
+                            {
+                                "l": {
+                                    "en-US": "1/3 row"
+                                },
+                                "v": "col col-33 sml-lbl"
+                            },
+                            {
+                                "l": {
+                                    "en-US": "1/4 row"
+                                },
+                                "v": "col col-25 sml-lbl"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "field_name",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "label": {
+                        "en-US": "Field Name"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "field_label",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "label": {
+                        "en-US": "Label"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "field_icon",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "label": {
+                        "en-US": "Icon"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "field_default",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "label": {
+                        "en-US": "Default"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str",
+                            "num",
+                            "bool",
+                            "json",
+                            "bin"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "field_placeholder",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "label": {
+                        "en-US": "Placeholder"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "field_required",
+                "type": "bool",
+                "value": "false",
+                "ui": {
+                    "label": {
+                        "en-US": "Required"
+                    }
+                }
+            },
+            {
+                "name": "typed",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "label": {
+                        "en-US": "Typed:"
+                    },
+                    "type": "none"
+                }
+            },
+            {
+                "name": "field_type_string",
+                "type": "bool",
+                "value": "false",
+                "ui": {
+                    "label": {
+                        "en-US": "str"
+                    },
+                    "type": "checkbox"
+                }
+            },
+            {
+                "name": "field_type_number",
+                "type": "bool",
+                "value": "false",
+                "ui": {
+                    "label": {
+                        "en-US": "num"
+                    },
+                    "type": "checkbox"
+                }
+            },
+            {
+                "name": "field_type_boolean",
+                "type": "bool",
+                "value": "false",
+                "ui": {
+                    "label": {
+                        "en-US": "bool"
+                    },
+                    "type": "checkbox"
+                }
+            },
+            {
+                "name": "field_type_msg",
+                "type": "bool",
+                "value": "false",
+                "ui": {
+                    "label": {
+                        "en-US": "msg"
+                    },
+                    "type": "checkbox"
+                }
+            },
+            {
+                "name": "field_type_flow",
+                "type": "bool",
+                "value": "false",
+                "ui": {
+                    "label": {
+                        "en-US": "flow"
+                    },
+                    "type": "checkbox"
+                }
+            },
+            {
+                "name": "field_type_global",
+                "type": "bool",
+                "value": "false",
+                "ui": {
+                    "label": {
+                        "en-US": "global"
+                    },
+                    "type": "checkbox"
+                }
+            },
+            {
+                "name": "field_type_json",
+                "type": "bool",
+                "value": "false",
+                "ui": {
+                    "label": {
+                        "en-US": "json"
+                    },
+                    "type": "checkbox"
+                }
+            },
+            {
+                "name": "field_type_additional",
+                "type": "bool",
+                "value": "false",
+                "ui": {
+                    "label": {
+                        "en-US": "Include additional type definition array (below)"
+                    },
+                    "type": "checkbox"
+                }
+            },
+            {
+                "name": "field_additional_types",
+                "type": "json",
+                "value": "[{\"value\":\"full\",\"label\":\"complete msg object\",\"hasValue\":false}]",
+                "ui": {
+                    "label": {
+                        "en-US": "Type Definitions"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "json"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "field_default_type",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "label": {
+                        "en-US": "Default Type"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            }
+        ],
+        "meta": {},
+        "color": "#DDAA99",
+        "icon": "font-awesome/fa-i-cursor"
+    },
+    {
+        "id": "2f6d8f31aa468d9f",
+        "type": "template",
+        "z": "7062e6f741533eb2",
+        "name": "edit_dialog",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "html",
+        "syntax": "mustache",
+        "template": "<div class=\"{{field_columns}}\">\n    {{{field_label_elm}}}\n    <input type=\"text\" id=\"node-input-{{field_name}}\" placeholder=\"{{{field_placeholder}}}\">\n    {{{field_has_hidden_type}}}\n</div><!--col-->",
+        "output": "str",
+        "x": 150,
+        "y": 100,
+        "wires": [
+            [
+                "a0b8b4c7a26b07dd"
+            ]
+        ]
+    },
+    {
+        "id": "73a3b0f6af6b0aeb",
+        "type": "function",
+        "z": "7062e6f741533eb2",
+        "name": "function 2",
+        "func": "msg.field_name = env.get('field_name');\nmsg.field_label = env.get('field_label');\nlet icon = env.get('field_icon');\nif (icon != '') {\n    msg.field_icon = '<i class=\"fa fa-' + icon + '\"></i> ';\n}else{\n    msg.field_icon = '';\n}\nif (msg.field_label == '') {\n    msg.field_label_elm = '';\n}else{\n    msg.field_label_elm = '<label for=\"node-input-' + msg.field_name + '\">';\n    msg.field_label_elm += msg.field_icon + msg.field_label + '</label>';\n}\nmsg.field_placeholder = env.get('field_placeholder');\nmsg.field_required = env.get('field_required');\nmsg.field_default = env.get('field_default');\n\nmsg.field_type_string = env.get('field_type_string');\nmsg.field_type_number = env.get('field_type_number');\nmsg.field_type_boolean = env.get('field_type_boolean');\nmsg.field_type_msg = env.get('field_type_msg');\nmsg.field_type_flow = env.get('field_type_flow');\nmsg.field_type_global = env.get('field_type_global');\nmsg.field_type_json = env.get('field_type_json');\nmsg.field_type_additional = env.get('field_type_additional');\nmsg.field_default_type = env.get('field_default_type');\nmsg.field_types = [];\nif (msg.field_type_string) {\n    msg.field_types.push('str');\n}\nif (msg.field_type_number) {\n    msg.field_types.push('num');\n}\nif (msg.field_type_boolean) {\n    msg.field_types.push('bool');\n}\nif (msg.field_type_msg) {\n    msg.field_types.push('msg');\n}\nif (msg.field_type_flow) {\n    msg.field_types.push('flow');\n}\nif (msg.field_type_global) {\n    msg.field_types.push('global');\n}\nif (msg.field_type_json) {\n    msg.field_types.push('json');\n}\nif (msg.field_type_additional) {\n    msg.field_additional_types = env.get('field_additional_types');\n    msg.field_types = msg.field_types.concat(msg.field_additional_types);\n}\nmsg.field_has_hidden_type = '';\nif (msg.field_types.length > 0) {\n    if (msg.field_default_type == '') {\n        msg.field_default_type = msg.field_types[0];\n    }\n    msg.field_has_hidden_type = '<input type=\"hidden\" id=\"node-input-' + env.get('field_name') + 'Type\"';\n    msg.field_has_hidden_type += 'value=\"' + msg.field_default_type + '\">';\n    msg.field_types_s = JSON.stringify(msg.field_types);\n}\nlet fc = env.get('field_columns');\nif (msg.field_label == '') {\n    fc += ' no-label';\n}\nmsg.field_columns = fc;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 140,
+        "y": 40,
+        "wires": [
+            [
+                "2f6d8f31aa468d9f"
+            ]
+        ]
+    },
+    {
+        "id": "a0b8b4c7a26b07dd",
+        "type": "function",
+        "z": "7062e6f741533eb2",
+        "name": "function 3",
+        "func": "msg.edit_dialog.push(msg.payload);\nlet theDefault = msg.field_default;\nif (msg.field_default_type != 'bool' && msg.field_default_type != 'num') {\n    theDefault = '\"' + theDefault + '\"';\n}\nlet required = '';\nif (msg.field_required) {\n    required = ', required:true';\n}\nmsg.defaults.push(msg.field_name + ': {value:' + theDefault + required + '}');\nif (msg.field_types.length > 0) {\n    msg.defaults.push(msg.field_name + 'Type: {value:\"' + msg.field_default_type + '\"}');\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 140,
+        "y": 160,
+        "wires": [
+            [
+                "250dcfedab51f0e5"
+            ]
+        ]
+    },
+    {
+        "id": "3c2eac4c542cd18e",
+        "type": "template",
+        "z": "7062e6f741533eb2",
+        "name": "oneditprepare",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "javascript",
+        "syntax": "mustache",
+        "template": "            // Prepare field {{field_name}}\n            $(\"#node-input-{{field_name}}\").typedInput({\n                type: \"{{{field_default_type}}}\",\n                types: {{{field_types_s}}},\n                typeField: \"#node-input-{{field_name}}Type\"\n            });\n",
+        "output": "str",
+        "x": 460,
+        "y": 40,
+        "wires": [
+            [
+                "67eed6e284e28123"
+            ]
+        ]
+    },
+    {
+        "id": "250dcfedab51f0e5",
+        "type": "switch",
+        "z": "7062e6f741533eb2",
+        "name": "field_has_hidden_type",
+        "property": "field_has_hidden_type",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "nempty"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 180,
+        "y": 220,
+        "wires": [
+            [
+                "11ee4d2cf1435263"
+            ],
+            [
+                "eda19645927d3dda"
+            ]
+        ]
+    },
+    {
+        "id": "67eed6e284e28123",
+        "type": "function",
+        "z": "7062e6f741533eb2",
+        "name": "function 4",
+        "func": "if (!msg.hasOwnProperty('rgroup_name')) {\n    msg._oneditprepare.push(msg.payload);\n}else{\n    msg.rgroup_details.push({\n        field_name: msg.field_name,\n        field_default_type: msg.field_default_type,\n        field_types: msg.field_types,\n        field_default: msg.field_default\n    });\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 440,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "eda19645927d3dda",
+        "type": "function",
+        "z": "7062e6f741533eb2",
+        "name": "function 38",
+        "func": "if (msg.hasOwnProperty('rgroup_name')) {\n    msg.rgroup_details.push({\n        field_name: msg.field_name,\n        field_default_type: '',\n        field_types: '',\n        field_default: msg.field_default\n    });\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 260,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "11ee4d2cf1435263",
+        "type": "junction",
+        "z": "7062e6f741533eb2",
+        "x": 340,
+        "y": 40,
+        "wires": [
+            [
+                "3c2eac4c542cd18e"
+            ]
+        ]
+    },
+    {
+        "id": "d0a39641213352a7",
+        "type": "subflow",
+        "name": "label",
+        "info": "The label node is used to place a standalone label in the property panel. Use this node to mark specific sections or to provide users with additional information. \n\nOther nodes may also include a built-in label and this node may not be necessary for nodes that have their own. The following properties for defining a label may apply to other nodes as well:\n\n* Layout - The number of columns the label will consume out of a division of four or three equal areas. To align controls on the panel on the same row, ensure the used column space totals to consume an entire row. \n* Label - The actual text that will be used when displaying the label.\n* Icon - A font awesome icon that will appear to the left of the label. You can specify the icon name sans any ‘fa’ prefix; i.e. bathtub \n\n",
+        "category": "node maker",
+        "in": [
+            {
+                "x": 40,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "b15245fe8570aaf7"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 320,
+                "y": 160,
+                "wires": [
+                    {
+                        "id": "84054fdfc2c499b0",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [
+            {
+                "name": "field_columns",
+                "type": "str",
+                "value": "col-100",
+                "ui": {
+                    "label": {
+                        "en-US": "Layout"
+                    },
+                    "type": "select",
+                    "opts": {
+                        "opts": [
+                            {
+                                "l": {
+                                    "en-US": "full-row"
+                                },
+                                "v": "col-100"
+                            },
+                            {
+                                "l": {
+                                    "en-US": "3/4 row"
+                                },
+                                "v": "col col-75"
+                            },
+                            {
+                                "l": {
+                                    "en-US": "2/3 row"
+                                },
+                                "v": "col col-66"
+                            },
+                            {
+                                "l": {
+                                    "en-US": "1/2 row"
+                                },
+                                "v": "col col-50"
+                            },
+                            {
+                                "l": {
+                                    "en-US": "1/3 row"
+                                },
+                                "v": "col col-33"
+                            },
+                            {
+                                "l": {
+                                    "en-US": "1/4 row"
+                                },
+                                "v": "col col-25"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "label_caption",
+                "type": "str",
+                "value": "&nbsp;",
+                "ui": {
+                    "label": {
+                        "en-US": "Label"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "label_icon",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "label": {
+                        "en-US": "Icon"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            }
+        ],
+        "meta": {},
+        "color": "#DDAA99",
+        "icon": "font-awesome/fa-font"
+    },
+    {
+        "id": "fe135416b9ef2efa",
+        "type": "template",
+        "z": "d0a39641213352a7",
+        "name": "edit_dialog",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "<div class=\"{{field_columns}} reg-lbl\">\n    <label class=\"full-lbl\">\n        {{{label_icon}}}<span>{{{label_caption}}}</span>\n    </label>\n</div><!--col-->",
+        "output": "str",
+        "x": 190,
+        "y": 100,
+        "wires": [
+            [
+                "84054fdfc2c499b0"
+            ]
+        ]
+    },
+    {
+        "id": "b15245fe8570aaf7",
+        "type": "function",
+        "z": "d0a39641213352a7",
+        "name": "function 6",
+        "func": "msg.label_caption = env.get('label_caption');\nlet icon = env.get('label_icon');\nif (icon != '') {\n    msg.label_icon = '<i class=\"fa fa-' + icon + '\"></i> ';\n}else{\n    msg.label_icon = '';\n} \nmsg.field_columns = env.get('field_columns');\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 180,
+        "y": 40,
+        "wires": [
+            [
+                "fe135416b9ef2efa"
+            ]
+        ]
+    },
+    {
+        "id": "84054fdfc2c499b0",
+        "type": "function",
+        "z": "d0a39641213352a7",
+        "name": "function 7",
+        "func": "msg.edit_dialog.push(msg.payload);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 180,
+        "y": 160,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "b30b4cf6837f20a7",
+        "type": "subflow",
+        "name": "selectbox",
+        "info": "Node Maker Docs\nThe selectbox node represents the use of Node-RED’s TypedInput and Typed Input Multiple Selectbox. For an example, see the bottom of the page for [Node-RED Inputs field for examples](https://nodered.org/docs/creating-nodes/edit-dialog#inputs). The following properties define the select box’s appearance:\n\n* Layout - The number of columns the label will consume out of a division of four or three equal areas. To align controls on the panel on the same row, ensure the used column space totals to consume an entire row.\n* Field Name - A JavaScript compatible variable name (no spaces hyphens or punctuation).\n* Label - The actual text that will be used when displaying the label.\n* Icon - A font awesome icon that will appear to the left of the label. You can specify the icon name sans any ‘fa’ prefix; i.e. bathtub\n* Values - The values of the selectbox are represented as a comma delimited string of captions:value (a caption separated by a colon and value). The captions will appear in the selectbox as a dropdown combobox. \n* Default - The default value or default selection (comma delimited if multiple is enabled) for the selectbox.\n* Allow Multiple - true to allow more than one value to be selected or false for only a single value. \n",
+        "category": "node maker",
+        "in": [
+            {
+                "x": 60,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "a898132ca0292c19"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 540,
+                "y": 100,
+                "wires": [
+                    {
+                        "id": "3d97bfe487ea399d",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [
+            {
+                "name": "field_columns",
+                "type": "str",
+                "value": "col-100",
+                "ui": {
+                    "label": {
+                        "en-US": "Layout"
+                    },
+                    "type": "select",
+                    "opts": {
+                        "opts": [
+                            {
+                                "l": {
+                                    "en-US": "full-row"
+                                },
+                                "v": "col-100"
+                            },
+                            {
+                                "l": {
+                                    "en-US": "3/4 row"
+                                },
+                                "v": "col col-75 sml-lbl"
+                            },
+                            {
+                                "l": {
+                                    "en-US": "2/3 row"
+                                },
+                                "v": "col col-66 sml-lbl"
+                            },
+                            {
+                                "l": {
+                                    "en-US": "1/2 row"
+                                },
+                                "v": "col col-50 sml-lbl"
+                            },
+                            {
+                                "l": {
+                                    "en-US": "1/3 row"
+                                },
+                                "v": "col col-33 sml-lbl"
+                            },
+                            {
+                                "l": {
+                                    "en-US": "1/4 row"
+                                },
+                                "v": "col col-25 sml-lbl"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "field_name",
+                "type": "str",
+                "value": "fruit",
+                "ui": {
+                    "label": {
+                        "en-US": "Field Name"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "field_label",
+                "type": "str",
+                "value": "Fruits Label",
+                "ui": {
+                    "label": {
+                        "en-US": "Label"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "field_icon",
+                "type": "str",
+                "value": "box",
+                "ui": {
+                    "label": {
+                        "en-US": "Icon"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "field_values",
+                "type": "str",
+                "value": "Apple:a,Banana:b,Cherry:c",
+                "ui": {
+                    "label": {
+                        "en-US": "Values"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "field_default",
+                "type": "str",
+                "value": "b",
+                "ui": {
+                    "label": {
+                        "en-US": "Default"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "selectbox_multiple",
+                "type": "bool",
+                "value": "false",
+                "ui": {
+                    "label": {
+                        "en-US": "Allow Multiple"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "bool"
+                        ]
+                    }
+                }
+            }
+        ],
+        "meta": {},
+        "color": "#DDAA99",
+        "icon": "font-awesome/fa-list"
+    },
+    {
+        "id": "a898132ca0292c19",
+        "type": "function",
+        "z": "b30b4cf6837f20a7",
+        "name": "function 23",
+        "func": "msg.field_name = env.get('field_name');\nmsg.field_label = env.get('field_label');\nlet icon = env.get('field_icon');\nif (icon != '') {\n    msg.field_icon = '<i class=\"fa fa-' + icon + '\"></i> ';\n} else {\n    msg.field_icon = '';\n}\nif (msg.field_label == '') {\n    msg.field_label_elm = '';\n} else {\n    msg.field_label_elm = '<label for=\"node-input-' + msg.field_name + '\">';\n    msg.field_label_elm += msg.field_icon + msg.field_label + '</label>';\n}\nmsg.field_default = env.get('field_default');\nmsg.selectbox_multiple = env.get('selectbox_multiple');\nif (msg.selectbox_multiple) {\n    msg.selectbox_multiple = 'multiple: \"true\",' + \"\\n\";\n}else{\n    msg.selectbox_multiple = '';\n}\nmsg.field_values = env.get('field_values');\nlet fv = msg.field_values.split(',');\nlet o = '';\nfv.forEach(function(v, i) {\n    v = v.split(':');\n    o += '{ \"value\":\"' + v[1] + '\", \"label\": \"' + v[0].trim().replace('\"', '\\\"') + '\"}';\n    if (i < fv.length-1) {\n        o += \",\\n\";\n    }\n});\no = o.replace(/^/gm, \" \".repeat(28));\nmsg.field_values = o;\nmsg.field_columns = env.get('field_columns');\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 170,
+        "y": 40,
+        "wires": [
+            [
+                "d0c143eac43904cd"
+            ]
+        ]
+    },
+    {
+        "id": "d0c143eac43904cd",
+        "type": "template",
+        "z": "b30b4cf6837f20a7",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "<div class=\"{{field_columns}}\">\n    {{{field_label_elm}}}\n    <input type=\"text\" id=\"node-input-{{field_name}}\">\n</div><!--col-->",
+        "output": "str",
+        "x": 160,
+        "y": 100,
+        "wires": [
+            [
+                "1c0a4ee1081ab0ae"
+            ]
+        ]
+    },
+    {
+        "id": "1c0a4ee1081ab0ae",
+        "type": "function",
+        "z": "b30b4cf6837f20a7",
+        "name": "function 24",
+        "func": "msg.edit_dialog.push(msg.payload);\nmsg.defaults.push(msg.field_name + ': {value:\"' + msg.field_default.replaceAll('\"', '\\\"') + '\"}');\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 170,
+        "y": 160,
+        "wires": [
+            [
+                "436c6476640d73e2"
+            ]
+        ]
+    },
+    {
+        "id": "436c6476640d73e2",
+        "type": "template",
+        "z": "b30b4cf6837f20a7",
+        "name": "oneditprepare",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "javascript",
+        "syntax": "mustache",
+        "template": "            // Prepare selectbox {{field_name}}\n            $(\"#node-input-{{field_name}}\").typedInput({\n                types: [\n                    {\n                        value: \"{{field_name}}\",\n                        {{{selectbox_multiple}}}\n                        options: [\n{{{field_values}}}\n                        ]\n                    }\n                ]\n            });\n",
+        "output": "str",
+        "x": 420,
+        "y": 40,
+        "wires": [
+            [
+                "3d97bfe487ea399d"
+            ]
+        ]
+    },
+    {
+        "id": "3d97bfe487ea399d",
+        "type": "function",
+        "z": "b30b4cf6837f20a7",
+        "name": "function 25",
+        "func": "if (!msg.hasOwnProperty('rgroup_name')) {\n    msg._oneditprepare.push(msg.payload);\n} else {\n    msg.rgroup_details.push({\n        field_name: msg.field_name,\n        field_types: [{\n                value: msg.field_name,\n                multiple: (msg.selectbox_multiple != ''),\n                options: JSON.parse('[' + msg.field_values + ']')\n        }],\n        field_default_type: null,\n        field_default: msg.field_default\n    });\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 410,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "7996feeba4e5f327",
+        "type": "subflow",
+        "name": "spinner",
+        "info": "",
+        "category": "node maker",
+        "in": [
+            {
+                "x": 60,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "62b4d0382560364d"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 640,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "79f6b4d4f4df2a1a",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [
+            {
+                "name": "field_columns",
+                "type": "str",
+                "value": "col-100",
+                "ui": {
+                    "label": {
+                        "en-US": "Layout"
+                    },
+                    "type": "select",
+                    "opts": {
+                        "opts": [
+                            {
+                                "l": {
+                                    "en-US": "full-row"
+                                },
+                                "v": "col-100"
+                            },
+                            {
+                                "l": {
+                                    "en-US": "3/4 row"
+                                },
+                                "v": "col col-75 sml-lbl"
+                            },
+                            {
+                                "l": {
+                                    "en-US": "2/3 row"
+                                },
+                                "v": "col col-66 sml-lbl"
+                            },
+                            {
+                                "l": {
+                                    "en-US": "1/2 row"
+                                },
+                                "v": "col col-50 sml-lbl"
+                            },
+                            {
+                                "l": {
+                                    "en-US": "1/3 row"
+                                },
+                                "v": "col col-33 sml-lbl"
+                            },
+                            {
+                                "l": {
+                                    "en-US": "1/4 row"
+                                },
+                                "v": "col col-25 sml-lbl"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "field_name",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "label": {
+                        "en-US": "Field Name"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "field_label",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "label": {
+                        "en-US": "Label"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "field_icon",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "label": {
+                        "en-US": "Icon"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "field_default",
+                "type": "num",
+                "value": "",
+                "ui": {
+                    "label": {
+                        "en-US": "Default"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "num"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "field_min",
+                "type": "num",
+                "value": "0",
+                "ui": {
+                    "label": {
+                        "en-US": "Min"
+                    },
+                    "type": "spinner"
+                }
+            },
+            {
+                "name": "field_max",
+                "type": "num",
+                "value": "100",
+                "ui": {
+                    "label": {
+                        "en-US": "Max"
+                    },
+                    "type": "spinner"
+                }
+            }
+        ],
+        "meta": {},
+        "color": "#DDAA99",
+        "icon": "font-awesome/fa-sort"
+    },
+    {
+        "id": "62b4d0382560364d",
+        "type": "function",
+        "z": "7996feeba4e5f327",
+        "name": "spinner",
+        "func": "msg.field_name = env.get('field_name');\nmsg.field_label = env.get('field_label');\nlet icon = env.get('field_icon');\nif (icon != '') {\n    msg.field_icon = '<i class=\"fa fa-' + icon + '\"></i> ';\n} else {\n    msg.field_icon = '';\n}\nif (msg.field_label == '') {\n    msg.field_label_elm = '';\n} else {\n    msg.field_label_elm = '<label for=\"node-input-' + msg.field_name + '\">';\n    msg.field_label_elm += msg.field_icon + msg.field_label + '</label>';\n}\nmsg.field_default = env.get('field_default');\nlet fc = env.get('field_columns');\nif (msg.field_label == '') {\n    fc += ' no-label';\n}\nmsg.field_min = env.get('field_min');\nmsg.field_max = env.get('field_max');\nmsg.field_columns = fc;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 160,
+        "y": 40,
+        "wires": [
+            [
+                "07a16db04c64dc2c"
+            ]
+        ]
+    },
+    {
+        "id": "07a16db04c64dc2c",
+        "type": "template",
+        "z": "7996feeba4e5f327",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "<div class=\"{{field_columns}}\">\n    {{{field_label_elm}}}\n    <input type=\"text\" id=\"node-input-{{field_name}}\">\n    {{{field_has_hidden_type}}}\n</div><!--col-->",
+        "output": "str",
+        "x": 160,
+        "y": 100,
+        "wires": [
+            [
+                "85eb05fc963311be"
+            ]
+        ]
+    },
+    {
+        "id": "85eb05fc963311be",
+        "type": "function",
+        "z": "7996feeba4e5f327",
+        "name": "function 39",
+        "func": "msg.edit_dialog.push(msg.payload);\nmsg.defaults.push(msg.field_name + ': {value:' + msg.field_default + '}');\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 170,
+        "y": 160,
+        "wires": [
+            [
+                "5156716df3b6fd1d"
+            ]
+        ]
+    },
+    {
+        "id": "5156716df3b6fd1d",
+        "type": "template",
+        "z": "7996feeba4e5f327",
+        "name": "oneditprepare",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "            // Prepare spinner {{field_name}}\n            $(\"#node-input-{{field_name}}\").spinner({ min: {{field_min}}, max: {{field_max}} });",
+        "output": "str",
+        "x": 440,
+        "y": 40,
+        "wires": [
+            [
+                "79f6b4d4f4df2a1a"
+            ]
+        ]
+    },
+    {
+        "id": "79f6b4d4f4df2a1a",
+        "type": "function",
+        "z": "7996feeba4e5f327",
+        "name": "function 40",
+        "func": "if (!msg.hasOwnProperty('rgroup_name')) {\n    msg._oneditprepare.push(msg.payload);\n} else {\n    msg.rgroup_details.push({\n        field_name: msg.field_name,\n        field_min: msg.field_min,\n        field_max: msg.field_max,\n        field_default: msg.field_default,\n        field_types: ''\n    });\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "65d5e45697fed99a",
+        "type": "subflow",
+        "name": "finish node",
+        "info": "A finish node marks the end of a node definition. The finish node will finalize writing all\nthe files needed to create your node; the package.json, html, javascript, and ecompassing\nproject folder within your node-red instance's node_module folder. It will also restart the\nnode-red instance if it was started using the command:\n\n``\nkill -9 `cat /tmp/node-red.pid`; nohup nice node-red > /dev/null 2>&1 & echo $! > /tmp/node-red.pid\n``\n\nThis makes ongoing development easy as you simply need to refresh the browser to see node changes\nafter you have invoked the flow.",
+        "category": "node maker",
+        "in": [
+            {
+                "x": 40,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "37f124c38d4954c7"
+                    }
+                ]
+            }
+        ],
+        "out": [],
+        "env": [],
+        "meta": {},
+        "color": "#DDAA99"
+    },
+    {
+        "id": "0eb2dcf71e3bf43f",
+        "type": "template",
+        "z": "65d5e45697fed99a",
+        "name": "nodemakerhtml",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "<style>\n    {{{customcss}}}\n</style>\n<script type=\"text/html\" data-template-name=\"{{node_name}}\">\n    {{{inc_node_name}}}\n    <div id=\"node-props\" style=\"width: {{row_width}}px;\">\n        {{{edit_dialog}}}\n    </div><!--node-props-->\n</script>\n\n<script type=\"text/html\" data-help-name=\"{{node_name}}\">\n    {{{helpdetails}}}\n</script>\n\n<script type=\"text/javascript\">\n    RED.nodes.registerType('{{node_name}}', {\n        category: '{{node_category}}',\n        color: '{{node_color}}',\n        defaults: {\n            name: {value:\"\"},\n            {{{defaults}}}\n        },\n        inputs: {{numinputs}},\n        outputs: {{numoutputs}},\n        icon: \"font-awesome/fa-{{{node_icon}}}\",\n        label: function() {\n            return this.name || \"{{node_name}}\";\n        },\n        labelStyle: function() {\n            return this.name ? \"node_label_italic\" : \"\";\n        },\n        oneditprepare: function() {\n            {{{oneditprepare}}}\n        },\n        oneditresize: function() {\n            {{{oneditresize}}}        \n        },\n        oneditsave: function() {\n            {{{oneditsave}}}\n        },\n        oneditcancel: function() {\n            {{{oneditcancel}}}\n        }\n    });\n    {{{othercode}}}\n</script>\n",
+        "output": "str",
+        "x": 360,
+        "y": 200,
+        "wires": [
+            [
+                "1d0b5202023b245b"
+            ]
+        ]
+    },
+    {
+        "id": "46fdba84593e4a18",
+        "type": "file",
+        "z": "65d5e45697fed99a",
+        "name": "write nodename/nodename.html",
+        "filename": "nodename_html",
+        "filenameType": "msg",
+        "appendNewline": false,
+        "createDir": true,
+        "overwriteFile": "true",
+        "encoding": "utf8",
+        "x": 670,
+        "y": 220,
+        "wires": [
+            [
+                "f26a2d19e71211be"
+            ]
+        ]
+    },
+    {
+        "id": "2a9f513d9174ccde",
+        "type": "exec",
+        "z": "65d5e45697fed99a",
+        "command": "kill -9 `cat /tmp/node-red.pid`; nohup nice node-red > /dev/null 2>&1 & echo $! > /tmp/node-red.pid",
+        "addpay": "",
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "winHide": false,
+        "oldrc": false,
+        "name": "restart node-red",
+        "x": 200,
+        "y": 480,
+        "wires": [
+            [
+                "e674d758d3c14af8"
+            ],
+            [
+                "e674d758d3c14af8"
+            ],
+            [
+                "e674d758d3c14af8"
+            ]
+        ]
+    },
+    {
+        "id": "e674d758d3c14af8",
+        "type": "debug",
+        "z": "65d5e45697fed99a",
+        "name": "debug 50",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 440,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "43b6b50718414f9f",
+        "type": "template",
+        "z": "65d5e45697fed99a",
+        "name": "nodemakerjs",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "module.exports = function(RED) {\n    function {{node_name}}(config) {\n        RED.nodes.createNode(this,config);\n        var node = this;\n        {{{runtimecode}}}\n    }\n    RED.nodes.registerType('{{node_name}}', {{node_name}});\n}",
+        "output": "str",
+        "x": 350,
+        "y": 320,
+        "wires": [
+            [
+                "8f4279aa76193d2d"
+            ]
+        ]
+    },
+    {
+        "id": "8f4279aa76193d2d",
+        "type": "file",
+        "z": "65d5e45697fed99a",
+        "name": "write nodename/nodename.js",
+        "filename": "nodename_js",
+        "filenameType": "msg",
+        "appendNewline": false,
+        "createDir": true,
+        "overwriteFile": "true",
+        "encoding": "utf8",
+        "x": 670,
+        "y": 340,
+        "wires": [
+            [
+                "2a9f513d9174ccde"
+            ]
+        ]
+    },
+    {
+        "id": "fa07b8c430e2643d",
+        "type": "switch",
+        "z": "65d5e45697fed99a",
+        "name": "",
+        "property": "nodemakerhtml",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "empty"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 170,
+        "y": 220,
+        "wires": [
+            [
+                "0eb2dcf71e3bf43f"
+            ],
+            [
+                "987b04d149c1e6b2"
+            ]
+        ]
+    },
+    {
+        "id": "987b04d149c1e6b2",
+        "type": "change",
+        "z": "65d5e45697fed99a",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "nodemakerhtml",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 360,
+        "y": 240,
+        "wires": [
+            [
+                "1d0b5202023b245b"
+            ]
+        ]
+    },
+    {
+        "id": "f26a2d19e71211be",
+        "type": "switch",
+        "z": "65d5e45697fed99a",
+        "name": "",
+        "property": "nodemakerjs",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "empty"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 170,
+        "y": 340,
+        "wires": [
+            [
+                "43b6b50718414f9f"
+            ],
+            [
+                "0c85d78ee708d905"
+            ]
+        ]
+    },
+    {
+        "id": "0c85d78ee708d905",
+        "type": "change",
+        "z": "65d5e45697fed99a",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "nodemakerjs",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 360,
+        "y": 360,
+        "wires": [
+            [
+                "8f4279aa76193d2d"
+            ]
+        ]
+    },
+    {
+        "id": "3d44470abb3be3af",
+        "type": "function",
+        "z": "65d5e45697fed99a",
+        "name": "compose defaults, othercode",
+        "func": "if (msg.hasOwnProperty('useTemplates')) return msg;\nmsg._oneditprepare.push(msg.payload);\n\nString.prototype.delRightMost = function (sFind) {\n    for (var i = this.length; i >= 0; i = i - 1) {\n        var f = this.indexOf(sFind, i);\n        if (f != -1) {\n            return this.substring(0, f);\n            break;\n        }\n    }\n    return this;\n};\nString.prototype.getRightMost = function (sFind) {\n    for (var i = this.length; i >= 0; i = i - 1) {\n        var f = this.indexOf(sFind, i);\n        if (f != -1) {\n            return this.substring(f + sFind.length, f + sFind.length + this.length);\n        }\n    }\n    return this;\n};\nString.prototype.delLeftMost = function (sFind) {\n    for (var i = 0; i < this.length; i = i + 1) {\n        var f = this.indexOf(sFind, i);\n        if (f != -1) {\n            return this.substring(f + sFind.length, f + sFind.length + this.length);\n            break;\n        }\n    }\n    return this;\n};\nString.prototype.getLeftMost = function (sFind) {\n    for (var i = 0; i < this.length; i = i + 1) {\n        var f = this.indexOf(sFind, i);\n        if (f != -1) {\n            return this.substring(0, f);\n            break;\n        }\n    }\n    return this;\n};\nvar indent = \" \".repeat(4);\nvar tabIndent = \"\";\nvar edit_dialog = \" \".repeat(8) + '<div class=\"form-row\">' + \"\\n\";\nvar cTotal = 0;\nvar nItems = 0;\nvar initTab = false;\nvar firstTabName = '';\nvar bInRGroup = false;    \nmsg.edit_dialog.forEach(function(item, index) {\n    if (item.indexOf('\"type\":\"tab_definition\"') == -1 && item.indexOf('form-row rgroup') == -1) {\n        item = item.replace(/^/gm, tabIndent);\n        item = item.replace(/^/gm, tabIndent);\n        if (bInRGroup) {\n            item = item.replace(/^/gm, \" \".repeat(4));\n        }\n    }\n    if (item.indexOf('<div class=\"form-row rgroup\"') > -1) {\n        edit_dialog = edit_dialog.delRightMost('<div class=\"form-row\">').trimEnd() + \"\\n\";\n        item += \" \".repeat(4) + '<div class=\"form-row\">' + \"\\n\";\n        item = item.replace(/^/gm, \" \".repeat(8) + tabIndent).trimEnd() + \"\\n\";\n        bInRGroup = true;\n        edit_dialog += item;\n        return;\n    }\n    if (item.indexOf('<!--form-row rgroup-->') > -1) {\n        edit_dialog = edit_dialog.delRightMost('<div class=\"form-row\">').trimEnd() + \"\\n\";\n        edit_dialog += \" \".repeat(8) + tabIndent + \"</div><!--form-row rgroup-...-template-->\\n\";\n        if (index < msg.edit_dialog.length - 1) {\n            edit_dialog += indent + indent + tabIndent + '<div class=\"form-row\">' + \"\\n\";\n        }\n        bInRGroup = false;\n        return;\n    }\n    if (item.indexOf('\"type\":\"tab_definition\"') > -1) {\n        let tab = JSON.parse(item);\n        if (initTab == false) {\n            \n            // Inject the tab row\n            let r = edit_dialog.getRightMost('<div class=\"form-row\">');\n            edit_dialog = edit_dialog.delRightMost('<div class=\"form-row\">');\n            edit_dialog += '<div class=\"form-row func-tabs-row\">' + r;\n            edit_dialog += indent + indent + indent + '<ul style=\"min-width: 600px; margin-bottom: 20px;\" id=\"func-tabs\"></ul>' + \"\\n\";\n            edit_dialog += indent + indent + \"</div><!--func-tabs-row-->\\n\";\n            edit_dialog += indent + indent + '<div id=\"func-tabs-content\" style=\"min-height: calc(100% - 95px);\">' + \"\\n\";\n\n            // Start first tab\n            edit_dialog += indent + indent + indent + '<div id=\"func-tab-' + tab.name + '\" style=\"display:none\">' + \"\\n\";\n            edit_dialog += indent + indent + indent + indent + '<div class=\"form-row\">' + \"\\n\";\n            tabIndent = \" \".repeat(8);\n\n            // Init tab system\n            let code = \"// Prepare tab system\\n\";\n            code += \"var tabs = RED.tabs.create({\\n\";\n            code += \"    id: 'func-tabs',\\n\";\n            code += \"    onchange: function(tab) {\\n\";\n            code += \"        $('#func-tabs-content').children().hide();\\n\";\n            code += \"        $('#' + tab.id).show();\\n\";\n            code += \"    }\\n\";\n            code += \"});\\n\\n\";\n\n            // Add first tab code\n            code += \"// Add first tab, \" + tab.name + \"\\n\";\n            code += \"tabs.addTab({\\n\";\n            code += \"    id: 'func-tab-\" + tab.name + \"',\\n\";\n            code += \"    iconClass: 'fa fa-\" + tab.icon + \"',\\n\";\n            code += \"    label: '\" + tab.label + \"'\\n\";\n            code += \"});\\n\\n\";\n            firstTabName = tab.name;\n            code = code.replace(/^/gm, \" \".repeat(12));\n            msg._oneditprepare.push(code);\n            initTab = true;\n        }else{\n\n            // Add subsequent tabs \n            let r = edit_dialog.getRightMost('    <div class=\"form-row\"');\n            edit_dialog = edit_dialog.delRightMost('    <div class=\"form-row\"');\n            edit_dialog += \"</div><!--func-tab-tab#-->\\n\"; // close out last tab\n            edit_dialog += \" \".repeat(12) + '<div id=\"func-tab-' + tab.name + '\" style=\"display:none\">' + \"\\n\";\n            edit_dialog += \" \".repeat(16) + '<div class=\"form-row\"' + r;\n\n            // Add additional tab code\n            let code = \"// Add tab, \" + tab.name + \"\\n\";            \n            code += \"tabs.addTab({\\n\";\n            code += \"    id: 'func-tab-\" + tab.name + \"',\\n\";\n            code += \"    iconClass: 'fa fa-\" + tab.icon + \"',\\n\";\n            code += \"    label: '\" + tab.label + \"'\\n\";\n            code += \"});\\n\\n\";\n            code = code.replace(/^/gm, \" \".repeat(12));\n            msg._oneditprepare.push(code);\n        }        \n    }else{\n        if (tabIndent == '') {\n            item = item.replace(/^/gm, indent + indent + indent);\n        }else{\n            item = item.replace(/^/gm, indent);\n        }\n        let c = item.delLeftMost('col-').getLeftMost('\"').getLeftMost(' ');\n        cTotal += Number(c);\n        if (cTotal >= 83) {\n            let m = 5 * nItems;\n            if (m > 0) {\n                item = item.replace(\n                    'class=\"col ',\n                    'style=\"margin-right:-' + m.toString() + 'px;\" class=\"col '\n                );\n            }\n            if (nItems == 3) {\n                let r = edit_dialog.getRightMost('<div class=\"form-row\">');\n                edit_dialog = edit_dialog.delRightMost('<div class=\"form-row\">');\n                edit_dialog += '<div class=\"form-row\" style=\"margin-right:10px;\">' + r;\n            }\n            edit_dialog += item + \"\\n\";\n            if (index < msg.edit_dialog.length - 1) {\n                if (bInRGroup) {\n                    edit_dialog += \" \".repeat(4);\n                }\n                edit_dialog += indent + indent + tabIndent + \"</div><!--form-row-->\\n\";\n                edit_dialog += indent + indent + tabIndent + '<div class=\"form-row\">' + \"\\n\";\n                cTotal = 0;\n                nItems = 0;\n            }\n        } else {\n            edit_dialog += item + \"\\n\";\n            nItems++;\n        }\n    }\n});\nif (initTab) { \n    edit_dialog += \" \".repeat(16) + \"</div><!--form-row-->\\n\";\n    edit_dialog += \" \".repeat(12) + \"</div><!--func-tab-tab#-->\\n\";\n    edit_dialog += \" \".repeat(8) + \"</div><!--func-tabs-content-->\";\n\n    // Activate the first tab if present\n    let code = \" \".repeat(12) + 'tabs.activateTab(\"func-tab-' + firstTabName + '\");' + \"\\n\";\n    msg._oneditprepare.push(code);\n}else{\n    edit_dialog += \" \".repeat(8) + \"</div><!--form-row-->\";\n}\nmsg.edit_dialog = edit_dialog;\n\nlet defaults = '';\nmsg.defaults.forEach(function(item, index) {\n    defaults += \"            \" + item;\n    if (index < msg.defaults.length -1) {\n        defaults += \",\\n\";\n    }else{\n        defaults += \"\\n\";\n    }\n});\nmsg.defaults = defaults;\nmsg.oneditprepare = \"\\n\" + msg._oneditprepare.join(\"\\n\");\nmsg.oneditresize = \"\\n\" + msg._oneditresize.join(\"\\n\");\nmsg.oneditsave = \"\\n\" + msg._oneditsave.join(\"\\n\");\nmsg.oneditcancel = \"\\n\" + msg._oneditcancel.join(\"\\n\");\nmsg.defaults = msg.defaults.slice(0, -1);\nvar othercode = \"\";\nfor (var key in msg._othercode) {\n    var value = msg._othercode[key];\n    othercode += value;\n}\nmsg.othercode = \"\\n\" + othercode;\nmsg.runtimecode = \"\\n\" + msg.runtimecode.replace(/^/gm, \"    \".repeat(4));\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 260,
+        "y": 100,
+        "wires": [
+            [
+                "fa07b8c430e2643d"
+            ]
+        ]
+    },
+    {
+        "id": "37f124c38d4954c7",
+        "type": "template",
+        "z": "65d5e45697fed99a",
+        "name": "re-size fix",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "javascript",
+        "syntax": "mustache",
+        "template": "            // Allow dynamic re-size after init. appearance \n            setTimeout(function () {\n                $('#node-props').css('width', '100%');\n            }, 30);",
+        "output": "str",
+        "x": 200,
+        "y": 40,
+        "wires": [
+            [
+                "3d44470abb3be3af"
+            ]
+        ]
+    },
+    {
+        "id": "1d0b5202023b245b",
+        "type": "junction",
+        "z": "65d5e45697fed99a",
+        "x": 500,
+        "y": 220,
+        "wires": [
+            [
+                "46fdba84593e4a18"
+            ]
+        ]
+    },
+    {
+        "id": "85e13a6e48f6a1c3",
+        "type": "subflow",
+        "name": "start node",
+        "info": "The start node marks the beginning of a new node defintion. To create a node,\nconnect an inject node to the start node and connect the start node to a \nfinish node. You may wire various other nodes between the start and finish\nnodes to define your node's user interface.\n\nThe following properties can be configured in the properties panel:\n\n* Node Name - choose a JavaScript variable safe name for your node.\n* Version - A valid version string in the form of major, minor, patch i.e. 1.0.0\n* Description - a short description of your node.\n* Category - The palette group the node will appear under; existing i.e. common or you can define your own.\n* Icon - An existing fontawesome name, sans the 'font-awesome/fa-' prefix; i.e. bathtub\n* Color - The color of the node as it appears in the palette and editor. I.e. #E2D96E\n* Keywords - Used in the package.json file for reference and indexing by npm.\n* Author Name - The name of the node author. Used in package.json\n* Author Email - The email of the node author. Used in package.json\n* GitHub Handle - The handle used for the GitHub repo URL, I.e. john will appears as https://github.com/john/node-name\n* Max Row Width - The initial width of the property dialog (in pixels) when it is first opened.\n* Inputs - Whether the node accepts an input or not; 1 or 0 our the only acceptable values.\n* Outputs - The number of outputs the node will have.\n* Include node name... - Determines if a default name field will appear at the top of the property window; appears above any tab or other input fields.\n",
+        "category": "node maker",
+        "in": [
+            {
+                "x": 40,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "729874432b3551f1"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 740,
+                "y": 200,
+                "wires": [
+                    {
+                        "id": "1d506b65823c19c3",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [
+            {
+                "name": "node_name",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "label": {
+                        "en-US": "Node Name"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "node_version",
+                "type": "str",
+                "value": "0.0.1",
+                "ui": {
+                    "label": {
+                        "en-US": "Version"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "node_description",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "label": {
+                        "en-US": "Description"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "node_category",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "label": {
+                        "en-US": "Category"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "node_icon",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "label": {
+                        "en-US": "Icon"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "node_color",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "label": {
+                        "en-US": "Color"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "keywords",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "label": {
+                        "en-US": "Keywords"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "author_name",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "label": {
+                        "en-US": "Author Name"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "author_email",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "label": {
+                        "en-US": "Author Email"
+                    }
+                }
+            },
+            {
+                "name": "github_handle",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "label": {
+                        "en-US": "GitHub Handle"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "row_width",
+                "type": "num",
+                "value": "460",
+                "ui": {
+                    "label": {
+                        "en-US": "Max Row Width"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "num"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "numinputs",
+                "type": "num",
+                "value": "1",
+                "ui": {
+                    "label": {
+                        "en-US": "Inputs"
+                    },
+                    "type": "spinner",
+                    "opts": {
+                        "min": 0,
+                        "max": 1
+                    }
+                }
+            },
+            {
+                "name": "numoutputs",
+                "type": "num",
+                "value": "1",
+                "ui": {
+                    "label": {
+                        "en-US": "Outputs"
+                    },
+                    "type": "spinner"
+                }
+            },
+            {
+                "name": "inc_node_name",
+                "type": "bool",
+                "value": "true",
+                "ui": {
+                    "label": {
+                        "en-US": "Include node name field at the top"
+                    },
+                    "type": "checkbox"
+                }
+            }
+        ],
+        "meta": {},
+        "color": "#DDAA99"
+    },
+    {
+        "id": "729874432b3551f1",
+        "type": "function",
+        "z": "85e13a6e48f6a1c3",
+        "name": "function 1",
+        "func": "msg.node_name = env.get('node_name');\nmsg.node_version = env.get('node_version');\nmsg.node_description = env.get('node_description');\nmsg.node_folder = env.get('HOME') + '/.node-red/node_modules/node-red-' + msg.node_name + '/';\nlet k = env.get('keywords');\nk = '\"' + k.replaceAll(' ', '').replaceAll(',', '\",\"') + '\"';\nmsg.node_category = env.get('node_category');\nmsg.node_icon = env.get('node_icon');\nmsg.node_color = env.get('node_color');\nmsg.keywords = k;\nmsg.author_name = env.get('author_name');\nmsg.author_email = env.get('author_email');\nmsg.github_handle = env.get('github_handle');\nmsg.package_json = msg.node_folder + 'package.json';\nmsg.gitignore = msg.node_folder + '.gitignore';\nmsg.license = msg.node_folder + 'LICENSE';\nmsg.readme = msg.node_folder + 'README.md';\nmsg.nodename_js = msg.node_folder + msg.node_name + '/' + msg.node_name + '.js';\nmsg.nodename_html = msg.node_folder + msg.node_name + '/' + msg.node_name + '.html';\nmsg.edit_dialog = [];\nmsg._oneditprepare = [];\nmsg._oneditresize = [];\nmsg._oneditsave = [];\nmsg._oneditcancel = [];\nmsg._othercode = {};\nmsg.defaults = [];\nmsg.row_width = env.get('row_width');\nmsg.numinputs = env.get('numinputs');\nmsg.numoutputs = env.get('numoutputs');\nmsg.inc_node_name = env.get('inc_node_name');\nmsg.nodemakerhtml = '';\nmsg.nodemakerjs = '';\nmsg.runtimecode = '';\nif (msg.inc_node_name) {\n    msg.inc_node_name = '    <div class=\"form-row\">' +\"\\n\";\n    msg.inc_node_name += '        <label for=\"node-input-name\"><i class=\"icon-tag\"></i> Name</label>' + \"\\n\";\n    msg.inc_node_name += '        <input type=\"text\" id=\"node-input-name\" placeholder=\"Name\">' + \"\\n\";\n    msg.inc_node_name += \"    </div>\";\n}else{\n    msg.inc_node_name = '';\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 160,
+        "y": 40,
+        "wires": [
+            [
+                "1a9cbb92df9f9927",
+                "4dc54964fd7d8d7b",
+                "a79e8a6b35ceac10",
+                "4eaf4f130e10c617",
+                "1d506b65823c19c3"
+            ]
+        ]
+    },
+    {
+        "id": "1a9cbb92df9f9927",
+        "type": "template",
+        "z": "85e13a6e48f6a1c3",
+        "name": "package.json",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "{\n    \"name\": \"node-red-{{node_name}}\",\n    \"version\": \"{{node_version}}\",\n    \"description\": \"A node that merges msg objects until all defined properties are present / conditions met before passing the combined msg along.\",\n    \"author\": \"{{author_name}} <{{author_email}}>\",\n    \"license\": \"MIT\",\n    \"keywords\": [{{{keywords}}}],\n    \"repository\": {\n      \"type\": \"git\",\n      \"url\": \"https://github.com/{{github_handle}}/node-red-{{node_name}}.git\"\n    },\n    \"dependencies\": {\n    },\n    \"node-red\": {\n      \"nodes\": {\n        \"{{node_name}}\": \"{{node_name}}/{{node_name}}.js\"\n      }\n    }\n  }\n  ",
+        "output": "str",
+        "x": 380,
+        "y": 40,
+        "wires": [
+            [
+                "e164bb1b88912998"
+            ]
+        ]
+    },
+    {
+        "id": "e164bb1b88912998",
+        "type": "file",
+        "z": "85e13a6e48f6a1c3",
+        "name": "write package.json",
+        "filename": "package_json",
+        "filenameType": "msg",
+        "appendNewline": false,
+        "createDir": true,
+        "overwriteFile": "true",
+        "encoding": "utf8",
+        "x": 570,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4dc54964fd7d8d7b",
+        "type": "template",
+        "z": "85e13a6e48f6a1c3",
+        "name": ".gitignore",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": ".DS_Store\nnode_modules\n",
+        "output": "str",
+        "x": 360,
+        "y": 80,
+        "wires": [
+            [
+                "c2f33b913e572b75"
+            ]
+        ]
+    },
+    {
+        "id": "c2f33b913e572b75",
+        "type": "file",
+        "z": "85e13a6e48f6a1c3",
+        "name": "write .gitignore",
+        "filename": "gitignore",
+        "filenameType": "msg",
+        "appendNewline": false,
+        "createDir": true,
+        "overwriteFile": "true",
+        "encoding": "utf8",
+        "x": 560,
+        "y": 80,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "a79e8a6b35ceac10",
+        "type": "template",
+        "z": "85e13a6e48f6a1c3",
+        "name": "MIT License",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "MIT License\n\nCopyright (c) 2022 {{author_name}}\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n",
+        "output": "str",
+        "x": 370,
+        "y": 120,
+        "wires": [
+            [
+                "6846859d76b0ec5e"
+            ]
+        ]
+    },
+    {
+        "id": "6846859d76b0ec5e",
+        "type": "file",
+        "z": "85e13a6e48f6a1c3",
+        "name": "write LICENSE",
+        "filename": "license",
+        "filenameType": "msg",
+        "appendNewline": false,
+        "createDir": true,
+        "overwriteFile": "true",
+        "encoding": "utf8",
+        "x": 560,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4eaf4f130e10c617",
+        "type": "template",
+        "z": "85e13a6e48f6a1c3",
+        "name": "README.md",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "# node-red-{{node_name}}\n{{{node_description}}}\n",
+        "output": "str",
+        "x": 370,
+        "y": 160,
+        "wires": [
+            [
+                "7631ff7c6efd5ad8"
+            ]
+        ]
+    },
+    {
+        "id": "7631ff7c6efd5ad8",
+        "type": "file",
+        "z": "85e13a6e48f6a1c3",
+        "name": "write README.md",
+        "filename": "readme",
+        "filenameType": "msg",
+        "appendNewline": false,
+        "createDir": true,
+        "overwriteFile": "true",
+        "encoding": "utf8",
+        "x": 570,
+        "y": 160,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "1d506b65823c19c3",
+        "type": "template",
+        "z": "85e13a6e48f6a1c3",
+        "name": "customcss",
+        "field": "customcss",
+        "fieldType": "msg",
+        "format": "css",
+        "syntax": "mustache",
+        "template": ".red-ui-tray-content #dialog-form {\n    white-space:nowrap;\n}\n.full-row .red-ui-typedInput-container {\n    min-width: 70%;\n}\n.col input {\n    min-width: 100%;\n}\n.sml-lbl {\n    height: 66px;\n}\n.sml-lbl label {\n    font-size: smaller;\n    margin-bottom: 0px;\n    display: block!important;\n}\n.reg-lbl label {\n    white-space: nowrap;\n    margin-top: 5px;\n    height: 0px;\n}\n.red-ui-editor .form-row label.full-lbl {\n    white-space: normal;\n    width: 100%;\n}\n.col {\n    float: left;\n    margin-right: 5px;\n    min-height: 36px;\n}\n.col .red-ui-typedInput-container {\n    width: 100%!important;\n}\n.col-50 {\n    width: 50%;\n}\n.col-33 {\n    width: 33%;\n}\n.col-66 {\n    width: 66%;\n}\n.col-25 {\n    width: 25%;\n}\n.col-75 {\n    width: 75%;\n}\n.col-100 .red-ui-typedInput-container {\n    width: 70%!important;\n}\n.col-100.no-label .red-ui-typedInput-container {\n    width: 100%!important;\n}\n.txtarea {\n    padding-bottom: 26px;\n}\n.txtarea label {\n    vertical-align: top;\n    margin-top: 3px;\n}\n.txtarea  textarea {\n    width: 70%;\n    margin-bottom: -28px!important;\n}\n.btn-regular {\n    margin-bottom: 14px!important;\n}\n.red-ui-editableList-item-content {\n    display: inline-block;\n    margin-bottom: -6px;\n    width: -moz-available;\n    width: -webkit-fill-available;\n    width: fill-available;\n}\n.red-ui-editableList-item-content .sml-lbl {\n    height: auto;\n}\n",
+        "output": "str",
+        "x": 370,
+        "y": 200,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "162e81fc107019c0",
+        "type": "subflow",
+        "name": "end rgroup",
+        "info": "",
+        "category": "node maker",
+        "in": [
+            {
+                "x": 60,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "86ccecca4fabac7f"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 560,
+                "y": 100,
+                "wires": [
+                    {
+                        "id": "f7e683ae5d08c682",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#DDAA99",
+        "icon": "font-awesome/fa-reorder"
+    },
+    {
+        "id": "86ccecca4fabac7f",
+        "type": "function",
+        "z": "162e81fc107019c0",
+        "name": "function 32",
+        "func": "msg.edit_dialog.push(\"<!--form-row rgroup-->\");\nmsg.rgroup_details = JSON.stringify(msg.rgroup_details, null, 4);\nmsg.rgroup_details = msg.rgroup_details.replace(/^/gm, \"    \".repeat(5)).trim();\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 170,
+        "y": 40,
+        "wires": [
+            [
+                "569fb952e0619afb"
+            ]
+        ]
+    },
+    {
+        "id": "569fb952e0619afb",
+        "type": "template",
+        "z": "162e81fc107019c0",
+        "name": "oneditprepare",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "javascript",
+        "syntax": "mustache",
+        "template": "            // Prepare editableList for {{rgroup_name}}\n            $(\"#node-input-{{rgroup_name}}-container\").css('height', '{{rgroup_height}}px').editableList({\n                addItem: function (container, i, opt) {\n                    let repeatingFields = {{{rgroup_details}}};\n                    let html = $('#rgroup-{{rgroup_name}}-template').html();\n                    repeatingFields.forEach(function(rf) {\n                        let fniType = \"{{rgroup_name}}\" + rf.field_name + \"Type\" + String(i).padStart(2, '0');\n                        html = html.replaceAll('id=\"node-input-' + rf.field_name + \"Type\" + '\"', 'id=\"node-input-' + fniType + '\"');\n                        let fni = \"{{rgroup_name}}\" + rf.field_name + String(i).padStart(2, '0');\n                        html = html.replaceAll('id=\"node-input-' + rf.field_name + '\"', 'id=\"node-input-' + fni + '\"');\n                        html = html.replaceAll('for=\"node-input-' + rf.field_name + '\"', 'for=\"node-input-' + fni + '\"');\n                        container.html(html);\n                    });\n                    repeatingFields.forEach(function (rf) {\n                        let fni = \"{{rgroup_name}}\" + rf.field_name + String(i).padStart(2, '0');\n                        if (rf.field_types != '') {\n                            let fniType = \"{{rgroup_name}}\" + rf.field_name + \"Type\" + String(i).padStart(2, '0');\n                            $(\"#node-input-\" + fni).typedInput({\n                                type: rf.field_default_type,\n                                types: rf.field_types,\n                                typeField: \"#node-input-\" + fniType\n                            });\n                        }else if(rf.hasOwnProperty('field_min')) {\n                            $(\"#node-input-\" + fni).spinner({ min: rf.field_min, max: rf.field_max });\n                        }\n\n                        // Restore entry\n                        if (Object.keys(opt).length != 0) {\n                            if ($(\"#node-input-\" + fni).attr('type') == 'hidden') {\n                                $(\"#node-input-\" + fni).typedInput('type', opt[rf.field_name + 'Type']);\n                                $(\"#node-input-\" + fni).typedInput('value', opt[rf.field_name]);\n                            }else{\n                                if ($(\"#node-input-\" + fni).attr('type') == 'checkbox') {\n                                    $(\"#node-input-\" + fni).prop('checked', opt[rf.field_name]);\n                                }else{\n                                    $(\"#node-input-\" + fni).val(opt[rf.field_name]);\n                                }\n                            }\n                        }else{\n                            if ($(\"#node-input-\" + fni).attr('type') == 'hidden') {\n                                $(\"#node-input-\" + fni).typedInput('value', rf.field_default);\n                            } else {\n                                if ($(\"#node-input-\" + fni).attr('type') != 'checkbox') {\n                                    $(\"#node-input-\" + fni).val(rf.field_default);\n                                }\n                            }\n                        }\n                    });\n                },\n                // sortItems: function (items) {\n                //    \n                // },\n                sortable: {{rgroup_sortable}},\n                removable: true\n            });\n\n            // Load prior editableList data for {{rgroup_name}}\n            if (this.{{rgroup_name}}) {\n                this.{{rgroup_name}}.forEach(function (m) {\n                    $('#node-input-{{rgroup_name}}-container').editableList('addItem', m);\n                });\n            }\n",
+        "output": "str",
+        "x": 180,
+        "y": 100,
+        "wires": [
+            [
+                "f73faadc1c4b41c5"
+            ]
+        ]
+    },
+    {
+        "id": "f73faadc1c4b41c5",
+        "type": "function",
+        "z": "162e81fc107019c0",
+        "name": "function 36",
+        "func": "msg._oneditprepare.push(msg.payload);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 170,
+        "y": 160,
+        "wires": [
+            [
+                "c62255b98a430015"
+            ]
+        ]
+    },
+    {
+        "id": "f7e683ae5d08c682",
+        "type": "function",
+        "z": "162e81fc107019c0",
+        "name": "function 37",
+        "func": "msg._oneditsave.push(msg.payload);\ndelete msg.rgroup_name;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c62255b98a430015",
+        "type": "template",
+        "z": "162e81fc107019c0",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "json",
+        "syntax": "mustache",
+        "template": "            // Save editableList for {{rgroup_name}}\n            {{rgroup_name}}Items = $(\"#node-input-{{rgroup_name}}-container\").editableList('items');\n            let {{rgroup_name}} = [];\n            {{rgroup_name}}Items.each(function(){\n                let entry = {};\n                $(this).find('input[id]').each(function() {\n                    let id = $(this).attr('id').substring(11 + \"{{rgroup_name}}\".length);\n                    id = id.slice(0, -2);\n                    let v = false;\n                    if ($(this).attr('type') == 'checkbox') {\n                        v = $(this).prop('checked');\n                    }else{\n                        v = $(this).val();\n                    }\n                    entry[id] = v;\n                });\n                {{rgroup_name}}.push(entry);\n            });\n            this.{{rgroup_name}} = {{rgroup_name}};\n",
+        "output": "str",
+        "x": 420,
+        "y": 40,
+        "wires": [
+            [
+                "f7e683ae5d08c682"
+            ]
+        ]
+    },
+    {
+        "id": "973db1310fdebc19",
+        "type": "subflow",
+        "name": "start rgroup",
+        "info": "Use the start rgroup node to define a repeatable set of properties; also known as an “editableList” in Node-RED’s API. An example of Node-RED’s editable list is used in the property panel for the [switch and change nodes](https://nodered.org/docs/user-guide/nodes#change). Using the start rgroup and end rgroup nodes makes designing repeatable lists easy. \n\nSimply place the following compatible controls between the start/end rgroup nodes:\n\n* label\n* field\n* selectbox\n* checkbox\n\nThe start rgroup node has the following properties:\n\n* Group Name - A JavaScript compatible variable name (no spaces hyphens or punctuation).\n* Label - The actual text that will be used when displaying the label.\n* Icon - A font awesome icon that will appear to the left of the label. You can specify the icon name sans any ‘fa’ prefix; i.e. bathtub\n* Sortable - Determines if the contents of the editable list can be sorted.\n* Height - Determines the height of the listbox that contains the repeating group of fields.\n",
+        "category": "node maker",
+        "in": [
+            {
+                "x": 60,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "c3b7bb6404eb0c25"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 400,
+                "y": 40,
+                "wires": [
+                    {
+                        "id": "b6607748c85f3e81",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [
+            {
+                "name": "rgroup_name",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "label": {
+                        "en-US": "Group Name"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "rgroup_label",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "label": {
+                        "en-US": "Label"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "rgroup_icon",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "label": {
+                        "en-US": "Icon"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "rgroup_sortable",
+                "type": "bool",
+                "value": "true",
+                "ui": {
+                    "label": {
+                        "en-US": "Sortable"
+                    }
+                }
+            },
+            {
+                "name": "rgroup_height",
+                "type": "num",
+                "value": "150",
+                "ui": {
+                    "label": {
+                        "en-US": "Height"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "num"
+                        ]
+                    }
+                }
+            }
+        ],
+        "meta": {},
+        "color": "#DDAA99",
+        "icon": "font-awesome/fa-reorder"
+    },
+    {
+        "id": "c3b7bb6404eb0c25",
+        "type": "function",
+        "z": "973db1310fdebc19",
+        "name": "function 30",
+        "func": "msg.rgroup_name = env.get('rgroup_name');\nmsg.rgroup_label = env.get('rgroup_label');\nlet icon = env.get('rgroup_icon');\nif (icon != '') {\n    msg.rgroup_icon = '<i class=\"fa fa-' + icon + '\"></i> ';\n} else {\n    msg.rgroup_icon = '';\n}\nif (msg.rgroup_label == '') {\n    msg.rgroup_label_elm = '';\n} else {\n    msg.rgroup_label_elm = '<label for=\"node-input-' + msg.rgroup_name + '\">';\n    msg.rgroup_label_elm += msg.rgroup_icon + msg.rgroup_label + '</label>';\n}\n//msg.field_columns = env.get('field_columns');\nmsg.rgroup_height = env.get('rgroup_height');\nmsg.rgroup_sortable = env.get('rgroup_sortable');\nmsg.rgroup_details = [];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 190,
+        "y": 40,
+        "wires": [
+            [
+                "593c4461e9fefc86"
+            ]
+        ]
+    },
+    {
+        "id": "593c4461e9fefc86",
+        "type": "template",
+        "z": "973db1310fdebc19",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "<div class=\"form-row rgroup\" style=\"margin-bottom:0;\">\n    {{{rgroup_label_elm}}}\n</div>\n<div class=\"form-row node-input-{{rgroup_name}}-container-row\">\n    <ol id=\"node-input-{{rgroup_name}}-container\"></ol>\n</div>\n<div id=\"rgroup-{{rgroup_name}}-template\" style=\"display:none\">\n",
+        "output": "str",
+        "x": 180,
+        "y": 100,
+        "wires": [
+            [
+                "b6607748c85f3e81"
+            ]
+        ]
+    },
+    {
+        "id": "b6607748c85f3e81",
+        "type": "function",
+        "z": "973db1310fdebc19",
+        "name": "function 35",
+        "func": "msg.defaults.push(msg.rgroup_name + ':[]');\nmsg.edit_dialog.push(msg.payload);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 190,
+        "y": 160,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "fc13a6e4f1b20d33",
+        "type": "subflow:973db1310fdebc19",
+        "z": "e20b76180a839224",
+        "name": "",
+        "env": [
+            {
+                "name": "rgroup_name",
+                "value": "grpRules",
+                "type": "str"
+            },
+            {
+                "name": "rgroup_label",
+                "value": "Rules",
+                "type": "str"
+            },
+            {
+                "name": "rgroup_icon",
+                "value": "gavel",
+                "type": "str"
+            },
+            {
+                "name": "rgroup_height",
+                "value": "300",
+                "type": "num"
+            }
+        ],
+        "x": 130,
+        "y": 160,
+        "wires": [
+            [
+                "8b785ab8c23d3663"
+            ]
+        ]
+    },
+    {
+        "id": "c5c9ce3bb47c7069",
+        "type": "subflow:162e81fc107019c0",
+        "z": "e20b76180a839224",
+        "name": "",
+        "x": 130,
+        "y": 400,
+        "wires": [
+            [
+                "dd1dc20e9110929e"
+            ]
+        ]
+    },
+    {
+        "id": "823f1b03d3d6a30d",
+        "type": "subflow:85e13a6e48f6a1c3",
+        "z": "e20b76180a839224",
+        "name": "",
+        "env": [
+            {
+                "name": "node_name",
+                "value": "emerge",
+                "type": "str"
+            },
+            {
+                "name": "node_version",
+                "value": "1.0.0",
+                "type": "str"
+            },
+            {
+                "name": "node_description",
+                "value": "A node that merges msg objects until defined properties are present / conditions met before passing the combined msg along.",
+                "type": "str"
+            },
+            {
+                "name": "node_category",
+                "value": "sequence",
+                "type": "str"
+            },
+            {
+                "name": "node_icon",
+                "value": "angle-double-right",
+                "type": "str"
+            },
+            {
+                "name": "node_color",
+                "value": "#E2D96E",
+                "type": "str"
+            },
+            {
+                "name": "keywords",
+                "value": "node-red, merge, await, join, combine, wait",
+                "type": "str"
+            },
+            {
+                "name": "author_name",
+                "value": "Stephen J. Carnam",
+                "type": "str"
+            },
+            {
+                "name": "author_email",
+                "value": "steveorevo@gmail.com",
+                "type": "str"
+            },
+            {
+                "name": "github_handle",
+                "value": "steveorevo",
+                "type": "str"
+            }
+        ],
+        "x": 130,
+        "y": 100,
+        "wires": [
+            [
+                "fc13a6e4f1b20d33"
+            ]
+        ]
+    },
+    {
+        "id": "aef239a85e3bb422",
+        "type": "subflow:65d5e45697fed99a",
+        "z": "e20b76180a839224",
+        "name": "",
+        "x": 370,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "f77048397badf7fe",
+        "type": "inject",
+        "z": "e20b76180a839224",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 120,
+        "y": 40,
+        "wires": [
+            [
+                "823f1b03d3d6a30d"
+            ]
+        ]
+    },
+    {
+        "id": "6133d2cafb29bacb",
+        "type": "subflow:7996feeba4e5f327",
+        "z": "e20b76180a839224",
+        "name": "",
+        "env": [
+            {
+                "name": "field_columns",
+                "value": "col col-66 sml-lbl",
+                "type": "str"
+            },
+            {
+                "name": "field_name",
+                "value": "rulesTimeout",
+                "type": "str"
+            },
+            {
+                "name": "field_default",
+                "value": "30",
+                "type": "num"
+            },
+            {
+                "name": "field_min",
+                "value": "1",
+                "type": "num"
+            },
+            {
+                "name": "field_max",
+                "value": "3600",
+                "type": "num"
+            }
+        ],
+        "x": 360,
+        "y": 100,
+        "wires": [
+            [
+                "54c1e0382396127e"
+            ]
+        ]
+    },
+    {
+        "id": "6fc5b661cfa241e0",
+        "type": "subflow:b30b4cf6837f20a7",
+        "z": "e20b76180a839224",
+        "name": "",
+        "env": [
+            {
+                "name": "field_columns",
+                "value": "col col-66 sml-lbl",
+                "type": "str"
+            },
+            {
+                "name": "field_name",
+                "value": "timeoutAction",
+                "type": "str"
+            },
+            {
+                "name": "field_label",
+                "value": "",
+                "type": "str"
+            },
+            {
+                "name": "field_icon",
+                "value": "",
+                "type": "str"
+            },
+            {
+                "name": "field_values",
+                "value": "Ignore timeout:0,Clear msg and start over:1,Trigger catch nodes:2",
+                "type": "str"
+            },
+            {
+                "name": "field_default",
+                "value": "1",
+                "type": "str"
+            }
+        ],
+        "x": 360,
+        "y": 220,
+        "wires": [
+            [
+                "9b11c8303d10d385"
+            ]
+        ]
+    },
+    {
+        "id": "54c1e0382396127e",
+        "type": "subflow:d0a39641213352a7",
+        "z": "e20b76180a839224",
+        "name": "",
+        "env": [
+            {
+                "name": "field_columns",
+                "value": "col col-33",
+                "type": "str"
+            },
+            {
+                "name": "label_caption",
+                "value": "Timeout Action",
+                "type": "str"
+            },
+            {
+                "name": "label_icon",
+                "value": "bolt",
+                "type": "str"
+            }
+        ],
+        "x": 350,
+        "y": 160,
+        "wires": [
+            [
+                "6fc5b661cfa241e0"
+            ]
+        ]
+    },
+    {
+        "id": "dd1dc20e9110929e",
+        "type": "subflow:d0a39641213352a7",
+        "z": "e20b76180a839224",
+        "name": "",
+        "env": [
+            {
+                "name": "field_columns",
+                "value": "col col-33",
+                "type": "str"
+            },
+            {
+                "name": "label_caption",
+                "value": "Timeout (seconds)",
+                "type": "str"
+            },
+            {
+                "name": "label_icon",
+                "value": "hourglass-half",
+                "type": "str"
+            }
+        ],
+        "x": 350,
+        "y": 40,
+        "wires": [
+            [
+                "6133d2cafb29bacb"
+            ]
+        ]
+    },
+    {
+        "id": "8b785ab8c23d3663",
+        "type": "subflow:7062e6f741533eb2",
+        "z": "e20b76180a839224",
+        "name": "",
+        "env": [
+            {
+                "name": "field_columns",
+                "value": "col col-33 sml-lbl",
+                "type": "str"
+            },
+            {
+                "name": "field_name",
+                "value": "ruleProperty",
+                "type": "str"
+            },
+            {
+                "name": "field_default",
+                "value": "payload",
+                "type": "str"
+            },
+            {
+                "name": "field_type_msg",
+                "type": "bool",
+                "value": "true"
+            },
+            {
+                "name": "field_type_flow",
+                "type": "bool",
+                "value": "true"
+            },
+            {
+                "name": "field_type_global",
+                "type": "bool",
+                "value": "true"
+            },
+            {
+                "name": "field_default_type",
+                "value": "msg",
+                "type": "str"
+            }
+        ],
+        "x": 110,
+        "y": 220,
+        "wires": [
+            [
+                "26ff3fd72424c326"
+            ]
+        ]
+    },
+    {
+        "id": "26ff3fd72424c326",
+        "type": "subflow:b30b4cf6837f20a7",
+        "z": "e20b76180a839224",
+        "name": "",
+        "env": [
+            {
+                "name": "field_columns",
+                "value": "col col-25 sml-lbl",
+                "type": "str"
+            },
+            {
+                "name": "field_name",
+                "value": "ruleOperation",
+                "type": "str"
+            },
+            {
+                "name": "field_label",
+                "value": "",
+                "type": "str"
+            },
+            {
+                "name": "field_icon",
+                "value": "",
+                "type": "str"
+            },
+            {
+                "name": "field_values",
+                "value": "==:==,!=:!=,>:gt,<:lt,empty:empty,not empty:!empty,size is ==:sz=,size is >:szgt,size is <:szlt",
+                "type": "str"
+            },
+            {
+                "name": "field_default",
+                "value": "==",
+                "type": "str"
+            }
+        ],
+        "x": 120,
+        "y": 280,
+        "wires": [
+            [
+                "81e4654b810f6ca0"
+            ]
+        ]
+    },
+    {
+        "id": "81e4654b810f6ca0",
+        "type": "subflow:7062e6f741533eb2",
+        "z": "e20b76180a839224",
+        "name": "",
+        "env": [
+            {
+                "name": "field_columns",
+                "value": "col col-33 sml-lbl",
+                "type": "str"
+            },
+            {
+                "name": "field_name",
+                "value": "ruleValue",
+                "type": "str"
+            },
+            {
+                "name": "field_type_string",
+                "type": "bool",
+                "value": "true"
+            },
+            {
+                "name": "field_type_number",
+                "type": "bool",
+                "value": "true"
+            },
+            {
+                "name": "field_type_boolean",
+                "type": "bool",
+                "value": "true"
+            },
+            {
+                "name": "field_type_msg",
+                "type": "bool",
+                "value": "true"
+            },
+            {
+                "name": "field_type_flow",
+                "type": "bool",
+                "value": "true"
+            },
+            {
+                "name": "field_type_global",
+                "type": "bool",
+                "value": "true"
+            }
+        ],
+        "x": 110,
+        "y": 340,
+        "wires": [
+            [
+                "c5c9ce3bb47c7069"
+            ]
+        ]
+    },
+    {
+        "id": "9b11c8303d10d385",
+        "type": "subflow:9771d13dd19bf60f",
+        "z": "e20b76180a839224",
+        "name": "",
+        "x": 370,
+        "y": 280,
+        "wires": [
+            [
+                "ed62dd7a71715b87"
+            ]
+        ]
+    },
+    {
+        "id": "ed62dd7a71715b87",
+        "type": "template",
+        "z": "e20b76180a839224",
+        "name": "nodemakerhtml",
+        "field": "nodemakerhtml",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "<style>\n    {{{customcss}}}\n</style>\n<script type=\"text/html\" data-template-name=\"{{node_name}}\">\n    {{{inc_node_name}}}\n    <div id=\"node-props\" style=\"width: {{row_width}}px;\">\n        {{{edit_dialog}}}\n    </div><!--node-props-->\n</script>\n\n<script type=\"text/html\" data-help-name=\"{{node_name}}\">\n    <p>The <strong>emerge</strong> node merges incoming msg objects into an internal buffer\n    until all matching predefined rules have been met. The merged buffer msg then 'emerges'\n    (is sent) to the output when all rules have been satisfied; after which the buffer is \n    cleared and merging new incoming msg objects and checking rules is resumed.</p>\n\n    <h3>Rules</h3>\n    <p>The rules list allows you to specify conditions to be satisfied before the internally buffered msg\n    is sent. For example, you can watch the msg object for specific properties to be present before \n    sending the msg along; this is useful if you have multiple asynchronous operations fetching data\n    that you need to submit to a node as one msg.</p>\n    <p>You are not limited to watching msg properties; the rules list can also check for flow and global properties\n    to have specific conditions before sending the msg buffer along.</p>\n    \n    <p><strong><i>Note:</strong> rules are only\n    checked when a msg is received. Changes to global and flow values can be used to allow or prevent the message\n    buffer from sending a msg but cannot 'trigger' the message buffer to send.</i></p>\n    \n    <p>Rule logic conditions are as follows:</p>\n\n    <ul>\n        <li><strong>==</strong> - A property is equal to value on the right. </li>\n        <li><strong>!=</strong> - A property is not equal to the value on the right. </li>\n        <li><strong>&gt;</strong> - A property is greater than the value on the right.</li>\n        <li><strong>&lt;</strong> - A property is less than the value on the right. </li>\n        <li><strong>empty</strong> - A property is empty (null, undefined, or an empty string).</li>\n        <li><strong>not empty</strong> - A property is not empty (null, undefined, or an empty string). </li>\n        <li><strong>size is ==</strong> - A property's length (string or number of array elements) is equal to the value on the right. </li>\n        <li><strong>size is &gt;</strong> - A property's length (string or number of array elements) is greater than the value on the right.  </li>\n        <li><strong>size is &lt;</strong> - A property's length (string or number of array elements) is less than the value on the right.  </li>\n    </ul>\n    \n    <h3>Timeout Action</h3>\n    <p>An optional timeout behavior can be set in seconds and determine the maximum number of seconds past since the node\n        received its last msg. The behavior of the timeout can be set with\n    the timeout action property:</p>\n    <ul>\n        <li><strong>Ignore timeout</strong> - No timeout action.</li>\n        <li><strong>Clear and restart</strong> - Clear the internal msg buffer and restart merging incoming msg objects.</li>\n        <li><strong>Trigger catch node</strong> - Trigger catch nodes with the current msg buffer before clearing it and restart merging.</li>\n    </ul>\n\n    <h3>Outputs</h3>\n    <ol class=\"node-ports\">\n        <li>Standard output\n            <dl class=\"message-properties\">\n                <dt>msg <span class=\"property-type\">object</span></dt>\n                <dd>the internal buffer of merged msg objects sent when all rule conditions have been satisfied.</dd>\n            </dl>\n        </li>\n    </ol>\n\n    <h3>References</h3>\n    <ul>\n        <li>You can find the official <a href=\"https://github.com/steveorevo/node-red-emerge\">emerge node public repository here</a></li>\n    </ul>\n    {{{helpdetails}}}\n</script>\n\n<script type=\"text/javascript\">\n    RED.nodes.registerType('{{node_name}}', {\n        category: '{{node_category}}',\n        color: '{{node_color}}',\n        defaults: {\n            name: {value:\"\"},\n            {{{defaults}}}\n        },\n        inputs: {{numinputs}},\n        outputs: {{numoutputs}},\n        icon: \"font-awesome/fa-{{{node_icon}}}\",\n        label: function() {\n            return this.name || \"{{node_name}}\";\n        },\n        labelStyle: function() {\n            return this.name ? \"node_label_italic\" : \"\";\n        },\n        oneditprepare: function() {\n            {{{oneditprepare}}}\n\n            // Hide ruleValue on empty/not empty\n            var outputCount = $(\"#node-input-outputs\").val(\"{}\");\n            console.log(outputCount);\n            this.grpRules.forEach(function(r, i) {\n                let ruleOperation = $('#node-input-grpRulesruleOperation' + String(i).padStart(2, '0'));\n                let ruleValue = $('#node-input-grpRulesruleValue' + String(i).padStart(2, '0'));\n                if (r.ruleOperation.indexOf('empty') != -1) {\n                    ruleValue.parent().hide();\n                }else{\n                    ruleValue.parent().show();\n                }\n                ruleOperation.on('change', function(e, t, v) {\n                    if (v.indexOf('empty') != -1) {\n                        ruleValue.parent().hide();\n                    }else{\n                        ruleValue.parent().show();\n                    }\n                });\n                $('#node-input-timeoutAction').on('change', function(e, t, v) {\n                    //if (v == '2') {\n                    //    node.outputs = 2;\n                    //}else{\n                    //    node.outputs = 1;\n                    //}\n                });\n            });\n        },\n        oneditresize: function() {\n            {{{oneditresize}}}        \n        },\n        oneditsave: function() {\n            {{{oneditsave}}}\n        },\n        oneditcancel: function() {\n            {{{oneditcancel}}}\n        }\n    });\n    {{{othercode}}}\n</script>\n",
+        "output": "str",
+        "x": 380,
+        "y": 340,
+        "wires": [
+            [
+                "ecca5c39ed4167f7"
+            ]
+        ]
+    },
+    {
+        "id": "ecca5c39ed4167f7",
+        "type": "template",
+        "z": "e20b76180a839224",
+        "name": "nodemakerjs",
+        "field": "nodemakerjs",
+        "fieldType": "msg",
+        "format": "javascript",
+        "syntax": "mustache",
+        "template": "module.exports = function(RED) {\n    function {{node_name}}(config) {\n        RED.nodes.createNode(this,config);\n        var node = this;\n        node.on('input', function(msg, send, done) {\n\n            // Merge the incoming msg into msgBuffer\n            let nodeContext = node.context();\n            let msgBuffer = nodeContext.get('msgBuffer');\n            if (msgBuffer == undefined) {\n                msgBuffer = {};\n            }\n            Object.assign(msgBuffer, msg);\n            nodeContext.set('msgBuffer', msgBuffer);\n            \n            // Check if all rules are valid\n            let rulePass = false;\n            for (let i = 0; i < config.grpRules.length; i++) {\n                let r = config.grpRules[i];\n                let flowContext = node.context().flow;\n                let globalContext = node.context().global;\n                \n                // Get the property value to compare\n                let rulePropertyValue = null;\n                switch(r.rulePropertyType) {\n                    case \"msg\":\n                        rulePropertyValue = msgBuffer[r.ruleProperty];\n                        break;\n                    case \"flow\":\n                        rulePropertyValue = flowContext.get(r.ruleProperty);\n                        break;\n                    case \"global\":\n                        rulePropertyValue = globalContext.get(r.ruleProperty);\n                        break;\n                }\n\n                // Get the comparative rule value\n                let ruleCompareValue = null;\n                switch(r.ruleValueType) {\n                    case \"msg\":\n                        ruleCompareValue = msgBuffer[r.ruleValue];\n                        break;\n                    case \"flow\":\n                        ruleCompareValue = flowContext.get(r.ruleValue);\n                        break;\n                    case \"global\":\n                        ruleCompareValue = globalContext.get(r.ruleValue);\n                        break;\n                    case \"str\":\n                        ruleCompareValue = r.ruleValue;\n                        break;\n                    case \"num\":\n                        ruleCompareValue = Number(r.ruleValue);\n                        break;\n                    case \"bool\":\n                        ruleCompareValue = (r.ruleValue == 'true');\n                        break;\n                }\n\n                // Do the comparative logic\n                rulePass = false;\n                switch(r.ruleOperation) {\n                    case \"==\":\n                        if (rulePropertyValue == ruleCompareValue) rulePass = true;\n                        break;\n                    case \"!=\":\n                        if (rulePropertyValue != ruleCompareValue) rulePass = true;\n                        break;\n                    case \"gt\":\n                        if (rulePropertyValue > ruleCompareValue) rulePass = true;\n                        break;\n                    case \"lt\":\n                        if (rulePropertyValue < ruleCompareValue) rulePass = true;\n                        break;\n                    case \"empty\":\n                        if (!rulePropertyValue) rulePass = true;\n                        break;\n                    case \"!empty\":\n                        if (rulePropertyValue) rulePass = true;\n                        break;\n                    case \"sz=\":\n                        if (rulePropertyValue.length == Number(ruleCompareValue)) rulePass = true;\n                        break;\n                    case \"szgt\":\n                        if (rulePropertyValue.length > Number(ruleCompareValue)) rulePass = true;\n                        break;\n                    case \"szlt\":\n                        if (rulePropertyValue.length < Number(ruleCompareValue)) rulePass = true;\n                        break;\n                }\n                \n                // Check if rules have failed\n                if (rulePass == false ) break;\n            }\n\n            // Reset any timeout on msg arrival \n            let msgTimeout = nodeContext.get('msgTimeout');\n            if (config.timeoutAction != 0) {\n                if (msgTimeout != undefined) {\n                    clearTimeout(msgTimeout);\n                }\n                msgTimeout = setTimeout(function () {\n                    msg = msgBuffer;\n                    nodeContext.set('msgBuffer', {});\n                    if (config.timeoutAction == 2) {\n                        done(msg);\n                    }\n                }, config.rulesTimeout * 1000);\n                nodeContext.set('msgTimeout', msgTimeout);\n            }\n\n            // Send msg on its way\n            if (rulePass) {\n                if (msgTimeout != undefined) {\n                    clearTimeout(msgTimeout);\n                }\n                msg = msgBuffer;\n                nodeContext.set('msgBuffer', {});\n                send(msg);\n            }\n        });\n        node.on('close', function () {\n            // Clean up any remaining timeout \n            let nodeContext = node.context();\n            let msgTimeout = nodeContext.get('msgTimeout');\n            if (msgTimeout != undefined) {\n                clearTimeout(msgTimeout);\n            }\n        });\n        {{{runtimecode}}}\n    }\n    RED.nodes.registerType('{{node_name}}', {{node_name}});\n}",
+        "output": "str",
+        "x": 370,
+        "y": 400,
+        "wires": [
+            [
+                "aef239a85e3bb422"
+            ]
+        ]
+    }
+]
