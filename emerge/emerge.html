@@ -152,8 +152,8 @@
     to have specific conditions before sending the msg buffer along.</p>
     
     <p><strong><i>Note:</strong> rules are only
-    checked when a msg is received. Changes to global and flow values can be used to allow or prevent the message
-    buffer from sending a msg but cannot 'trigger' the message buffer to send.</i></p>
+    checked when a msg is received. Changes to global and flow values can be used to allow or prevent the rules
+    from sending a msg but cannot trigger the message buffer to send.</i></p>
     
     <p>Rule logic conditions are as follows:</p>
 
@@ -176,7 +176,7 @@
     <ul>
         <li><strong>Ignore timeout</strong> - No timeout action.</li>
         <li><strong>Clear and restart</strong> - Clear the internal msg buffer and restart merging incoming msg objects.</li>
-        <li><strong>Trigger catch node</strong> - Error out by triggering any catch node with the current msg buffer and restart merging.</li>
+        <li><strong>Trigger catch node</strong> - Trigger catch nodes with the current msg buffer before clearing it and restart merging.</li>
     </ul>
 
     <h3>Outputs</h3>

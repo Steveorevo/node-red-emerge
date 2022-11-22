@@ -2,6 +2,35 @@ module.exports = function(RED) {
     function emerge(config) {
         RED.nodes.createNode(this,config);
         var node = this;
+
+        // Access nested objects
+        const getNestedObject = (nestedObj, pathArr) => {
+            return pathArr.split('.').reduce((obj, key) =>
+                (obj && obj[key] !== 'undefined') ? obj[key] : undefined, nestedObj);
+        }
+        
+        // String manipulation functions
+        String.prototype.delLeftMost = function (sFind) {
+            for (var i = 0; i < this.length; i = i + 1) {
+                var f = this.indexOf(sFind, i);
+                if (f != -1) {
+                    return this.substring(f + sFind.length, f + sFind.length + this.length);
+                    break;
+                }
+            }
+            return this;
+        };
+        String.prototype.getLeftMost = function (sFind) {
+            for (var i = 0; i < this.length; i = i + 1) {
+                var f = this.indexOf(sFind, i);
+                if (f != -1) {
+                    return this.substring(0, f);
+                    break;
+                }
+            }
+            return this;
+        };
+
         node.on('input', function(msg, send, done) {
 
             // Merge the incoming msg into msgBuffer
@@ -15,36 +44,67 @@ module.exports = function(RED) {
             
             // Check if all rules are valid
             let rulePass = false;
+            if (config.grpRules == undefined) return;
             for (let i = 0; i < config.grpRules.length; i++) {
                 let r = config.grpRules[i];
                 let flowContext = node.context().flow;
                 let globalContext = node.context().global;
+                rulePass = false;
                 
                 // Get the property value to compare
                 let rulePropertyValue = null;
                 switch(r.rulePropertyType) {
                     case "msg":
-                        rulePropertyValue = msgBuffer[r.ruleProperty];
+                        rulePropertyValue = getNestedObject(msgBuffer, r.ruleProperty);
                         break;
                     case "flow":
-                        rulePropertyValue = flowContext.get(r.ruleProperty);
+                        if (r.ruleProperty.indexOf(".") == -1) {
+                            rulePropertyValue = flowContext.get(r.ruleProperty);
+                        }else{
+                            let parent = r.ruleProperty.getLeftMost('.');
+                            let offspring = r.ruleProperty.delLeftMost('.');
+                            rulePropertyValue = flowContext.get(parent);
+                            rulePropertyValue = getNestedObject(rulePropertyValue, offspring);
+                        }
                         break;
                     case "global":
-                        rulePropertyValue = globalContext.get(r.ruleProperty);
+                        if (r.ruleProperty.indexOf(".") == -1) {
+                            rulePropertyValue = globalContext.get(r.ruleProperty);
+                        } else {
+                            let parent = r.ruleProperty.getLeftMost('.');
+                            let offspring = r.ruleProperty.delLeftMost('.');
+                            rulePropertyValue = globalContext.get(parent);
+                            rulePropertyValue = getNestedObject(rulePropertyValue, offspring);
+                        }
                         break;
                 }
+                if (rulePropertyValue == undefined) break;
 
                 // Get the comparative rule value
                 let ruleCompareValue = null;
                 switch(r.ruleValueType) {
                     case "msg":
-                        ruleCompareValue = msgBuffer[r.ruleValue];
+                        ruleCompareValue = getNestedObject(msgBuffer, r.ruleValue);
                         break;
                     case "flow":
-                        ruleCompareValue = flowContext.get(r.ruleValue);
+                        if (r.ruleValue.indexOf(".") == -1) {
+                            ruleCompareValue = flowContext.get(r.ruleValue);
+                        }else{
+                            let parent = r.ruleValue.getLeftMost('.');
+                            let offspring = r.ruleValue.delLeftMost('.');
+                            ruleCompareValue = flowContext.get(parent);
+                            ruleCompareValue = getNestedObject(ruleCompareValue, offspring);
+                        }
                         break;
                     case "global":
-                        ruleCompareValue = globalContext.get(r.ruleValue);
+                        if (r.ruleValue.indexOf(".") == -1) {
+                            ruleCompareValue = globalContext.get(r.ruleValue);
+                        } else {
+                            let parent = r.ruleValue.getLeftMost('.');
+                            let offspring = r.ruleValue.delLeftMost('.');
+                            ruleCompareValue = globalContext.get(parent);
+                            ruleCompareValue = getNestedObject(ruleCompareValue, offspring);
+                        }
                         break;
                     case "str":
                         ruleCompareValue = r.ruleValue;
@@ -56,9 +116,9 @@ module.exports = function(RED) {
                         ruleCompareValue = (r.ruleValue == 'true');
                         break;
                 }
+                if (ruleCompareValue == undefined) break;
 
                 // Do the comparative logic
-                rulePass = false;
                 switch(r.ruleOperation) {
                     case "==":
                         if (rulePropertyValue == ruleCompareValue) rulePass = true;
