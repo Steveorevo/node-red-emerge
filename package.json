@@ -1,24 +1,29 @@
 {
     "name": "@steveorevo/node-red-emerge",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "A node that merges msg objects until all defined properties are present / conditions met before passing the combined msg along.",
     "author": "Stephen J. Carnam <steveorevo@gmail.com>",
     "license": "MIT",
-    "keywords": ["node-red","merge", "await", "join", "combine", "wait"],
+    "keywords": [
+        "node-red",
+        "merge",
+        "await",
+        "join",
+        "combine",
+        "wait"
+    ],
     "repository": {
-      "type": "git",
-      "url": "https://github.com/steveorevo/node-red-emerge.git"
+        "type": "git",
+        "url": "https://github.com/steveorevo/node-red-emerge.git"
     },
-    "dependencies": {
-    },
+    "dependencies": {},
     "node-red": {
-      "nodes": {
-        "emerge": "emerge/emerge.js"
-      },
-      "version": ">=3.0.0"
+        "nodes": {
+            "emerge": "emerge/emerge.js"
+        },
+        "version": ">=3.0.0"
     },
     "engines": {
-      "node": ">=14.0.0"
+        "node": ">=14.0.0"
     }
-  }
-  
+}
