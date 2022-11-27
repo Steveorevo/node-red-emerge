@@ -1,0 +1,145 @@
+[
+    {
+        "id": "c4b3f62035982a12",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "0a5d142fe493b32a",
+        "type": "emerge",
+        "z": "c4b3f62035982a12",
+        "name": "wait for all user info",
+        "grpRules": [
+            {
+                "ruleProperty": "first_name",
+                "rulePropertyType": "msg",
+                "ruleOperation": "!empty",
+                "ruleValue": "",
+                "ruleValueType": "str"
+            },
+            {
+                "ruleProperty": "last_name",
+                "rulePropertyType": "msg",
+                "ruleOperation": "!empty",
+                "ruleValue": "",
+                "ruleValueType": "str"
+            },
+            {
+                "ruleProperty": "occupation",
+                "rulePropertyType": "msg",
+                "ruleOperation": "!empty",
+                "ruleValue": "",
+                "ruleValueType": "str"
+            }
+        ],
+        "ruleProperty": "payload",
+        "rulePropertyType": "msg",
+        "ruleOperation": "==",
+        "ruleValue": "",
+        "ruleValueType": "str",
+        "rulesTimeout": 30,
+        "timeoutAction": "1",
+        "x": 310,
+        "y": 100,
+        "wires": [
+            [
+                "4c5d7bca520c0054"
+            ]
+        ]
+    },
+    {
+        "id": "621efb1c34f39daa",
+        "type": "inject",
+        "z": "c4b3f62035982a12",
+        "name": "first_name",
+        "props": [
+            {
+                "p": "first_name",
+                "v": "Jack",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 100,
+        "y": 40,
+        "wires": [
+            [
+                "0a5d142fe493b32a"
+            ]
+        ]
+    },
+    {
+        "id": "cb8c62f1de3d970e",
+        "type": "inject",
+        "z": "c4b3f62035982a12",
+        "name": "last_name",
+        "props": [
+            {
+                "p": "last_name",
+                "v": "Burton",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 100,
+        "y": 100,
+        "wires": [
+            [
+                "0a5d142fe493b32a"
+            ]
+        ]
+    },
+    {
+        "id": "5683ab4dc09a100f",
+        "type": "inject",
+        "z": "c4b3f62035982a12",
+        "name": "occupation",
+        "props": [
+            {
+                "p": "occupation",
+                "v": "truck driver",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 100,
+        "y": 160,
+        "wires": [
+            [
+                "0a5d142fe493b32a"
+            ]
+        ]
+    },
+    {
+        "id": "4c5d7bca520c0054",
+        "type": "debug",
+        "z": "c4b3f62035982a12",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 500,
+        "y": 100,
+        "wires": []
+    }
+]
