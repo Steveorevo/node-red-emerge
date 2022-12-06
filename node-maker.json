@@ -2270,7 +2270,7 @@
     {
         "id": "fc13a6e4f1b20d33",
         "type": "subflow:973db1310fdebc19",
-        "z": "e20b76180a839224",
+        "z": "0f1abd4ab71b7474",
         "name": "",
         "env": [
             {
@@ -2295,7 +2295,7 @@
             }
         ],
         "x": 130,
-        "y": 160,
+        "y": 180,
         "wires": [
             [
                 "8b785ab8c23d3663"
@@ -2305,10 +2305,10 @@
     {
         "id": "c5c9ce3bb47c7069",
         "type": "subflow:162e81fc107019c0",
-        "z": "e20b76180a839224",
+        "z": "0f1abd4ab71b7474",
         "name": "",
         "x": 130,
-        "y": 400,
+        "y": 420,
         "wires": [
             [
                 "dd1dc20e9110929e"
@@ -2318,7 +2318,7 @@
     {
         "id": "823f1b03d3d6a30d",
         "type": "subflow:85e13a6e48f6a1c3",
-        "z": "e20b76180a839224",
+        "z": "0f1abd4ab71b7474",
         "name": "",
         "env": [
             {
@@ -2373,7 +2373,7 @@
             }
         ],
         "x": 130,
-        "y": 100,
+        "y": 120,
         "wires": [
             [
                 "fc13a6e4f1b20d33"
@@ -2383,16 +2383,16 @@
     {
         "id": "aef239a85e3bb422",
         "type": "subflow:65d5e45697fed99a",
-        "z": "e20b76180a839224",
+        "z": "0f1abd4ab71b7474",
         "name": "",
         "x": 370,
-        "y": 460,
+        "y": 480,
         "wires": []
     },
     {
         "id": "f77048397badf7fe",
         "type": "inject",
-        "z": "e20b76180a839224",
+        "z": "0f1abd4ab71b7474",
         "name": "",
         "props": [
             {
@@ -2411,7 +2411,7 @@
         "payload": "",
         "payloadType": "date",
         "x": 120,
-        "y": 40,
+        "y": 60,
         "wires": [
             [
                 "823f1b03d3d6a30d"
@@ -2421,7 +2421,7 @@
     {
         "id": "6133d2cafb29bacb",
         "type": "subflow:7996feeba4e5f327",
-        "z": "e20b76180a839224",
+        "z": "0f1abd4ab71b7474",
         "name": "",
         "env": [
             {
@@ -2451,7 +2451,7 @@
             }
         ],
         "x": 360,
-        "y": 100,
+        "y": 120,
         "wires": [
             [
                 "54c1e0382396127e"
@@ -2461,7 +2461,7 @@
     {
         "id": "6fc5b661cfa241e0",
         "type": "subflow:b30b4cf6837f20a7",
-        "z": "e20b76180a839224",
+        "z": "0f1abd4ab71b7474",
         "name": "",
         "env": [
             {
@@ -2496,7 +2496,7 @@
             }
         ],
         "x": 360,
-        "y": 220,
+        "y": 240,
         "wires": [
             [
                 "9b11c8303d10d385"
@@ -2506,7 +2506,7 @@
     {
         "id": "54c1e0382396127e",
         "type": "subflow:d0a39641213352a7",
-        "z": "e20b76180a839224",
+        "z": "0f1abd4ab71b7474",
         "name": "",
         "env": [
             {
@@ -2526,7 +2526,7 @@
             }
         ],
         "x": 350,
-        "y": 160,
+        "y": 180,
         "wires": [
             [
                 "6fc5b661cfa241e0"
@@ -2536,7 +2536,7 @@
     {
         "id": "dd1dc20e9110929e",
         "type": "subflow:d0a39641213352a7",
-        "z": "e20b76180a839224",
+        "z": "0f1abd4ab71b7474",
         "name": "",
         "env": [
             {
@@ -2556,7 +2556,7 @@
             }
         ],
         "x": 350,
-        "y": 40,
+        "y": 60,
         "wires": [
             [
                 "6133d2cafb29bacb"
@@ -2566,7 +2566,7 @@
     {
         "id": "8b785ab8c23d3663",
         "type": "subflow:7062e6f741533eb2",
-        "z": "e20b76180a839224",
+        "z": "0f1abd4ab71b7474",
         "name": "",
         "env": [
             {
@@ -2606,7 +2606,7 @@
             }
         ],
         "x": 110,
-        "y": 220,
+        "y": 240,
         "wires": [
             [
                 "26ff3fd72424c326"
@@ -2616,7 +2616,7 @@
     {
         "id": "26ff3fd72424c326",
         "type": "subflow:b30b4cf6837f20a7",
-        "z": "e20b76180a839224",
+        "z": "0f1abd4ab71b7474",
         "name": "",
         "env": [
             {
@@ -2651,7 +2651,7 @@
             }
         ],
         "x": 120,
-        "y": 280,
+        "y": 300,
         "wires": [
             [
                 "81e4654b810f6ca0"
@@ -2661,7 +2661,7 @@
     {
         "id": "81e4654b810f6ca0",
         "type": "subflow:7062e6f741533eb2",
-        "z": "e20b76180a839224",
+        "z": "0f1abd4ab71b7474",
         "name": "",
         "env": [
             {
@@ -2706,7 +2706,7 @@
             }
         ],
         "x": 110,
-        "y": 340,
+        "y": 360,
         "wires": [
             [
                 "c5c9ce3bb47c7069"
@@ -2716,10 +2716,10 @@
     {
         "id": "9b11c8303d10d385",
         "type": "subflow:9771d13dd19bf60f",
-        "z": "e20b76180a839224",
+        "z": "0f1abd4ab71b7474",
         "name": "",
         "x": 370,
-        "y": 280,
+        "y": 300,
         "wires": [
             [
                 "ed62dd7a71715b87"
@@ -2729,16 +2729,16 @@
     {
         "id": "ed62dd7a71715b87",
         "type": "template",
-        "z": "e20b76180a839224",
+        "z": "0f1abd4ab71b7474",
         "name": "nodemakerhtml",
         "field": "nodemakerhtml",
         "fieldType": "msg",
         "format": "handlebars",
         "syntax": "mustache",
-        "template": "<style>\n    {{{customcss}}}\n</style>\n<script type=\"text/html\" data-template-name=\"{{node_name}}\">\n    {{{inc_node_name}}}\n    <div id=\"node-props\" style=\"width: {{row_width}}px;\">\n        {{{edit_dialog}}}\n    </div><!--node-props-->\n</script>\n\n<script type=\"text/html\" data-help-name=\"{{node_name}}\">\n    <p>The <strong>emerge</strong> node merges incoming msg objects into an internal buffer\n    until all matching predefined rules have been met. The merged buffer msg then 'emerges'\n    (is sent) to the output when all rules have been satisfied; after which the buffer is \n    cleared and merging new incoming msg objects and checking rules is resumed.</p>\n\n    <h3>Rules</h3>\n    <p>The rules list allows you to specify conditions to be satisfied before the internally buffered msg\n    is sent. For example, you can watch the msg object for specific properties to be present before \n    sending the msg along; this is useful if you have multiple asynchronous operations fetching data\n    that you need to submit to a node as one msg.</p>\n    <p>You are not limited to watching msg properties; the rules list can also check for flow and global properties\n    to have specific conditions before sending the msg buffer along.</p>\n    \n    <p><strong><i>Note:</strong> rules are only\n    checked when a msg is received. Changes to global and flow values can be used to allow or prevent the rules\n    from sending a msg but cannot trigger the message buffer to send.</i></p>\n    \n    <p>Rule logic conditions are as follows:</p>\n\n    <ul>\n        <li><strong>==</strong> - A property is equal to value on the right. </li>\n        <li><strong>!=</strong> - A property is not equal to the value on the right. </li>\n        <li><strong>&gt;</strong> - A property is greater than the value on the right.</li>\n        <li><strong>&lt;</strong> - A property is less than the value on the right. </li>\n        <li><strong>empty</strong> - A property is empty (null, undefined, or an empty string).</li>\n        <li><strong>not empty</strong> - A property is not empty (null, undefined, or an empty string). </li>\n        <li><strong>size is ==</strong> - A property's length (string or number of array elements) is equal to the value on the right. </li>\n        <li><strong>size is &gt;</strong> - A property's length (string or number of array elements) is greater than the value on the right.  </li>\n        <li><strong>size is &lt;</strong> - A property's length (string or number of array elements) is less than the value on the right.  </li>\n    </ul>\n    \n    <h3>Timeout Action</h3>\n    <p>An optional timeout behavior can be set in seconds and determine the maximum number of seconds past since the node\n        received its last msg. The behavior of the timeout can be set with\n    the timeout action property:</p>\n    <ul>\n        <li><strong>Ignore timeout</strong> - No timeout action.</li>\n        <li><strong>Clear and restart</strong> - Clear the internal msg buffer and restart merging incoming msg objects.</li>\n        <li><strong>Trigger catch node</strong> - Trigger catch nodes with the current msg buffer before clearing it and restart merging.</li>\n    </ul>\n\n    <h3>Outputs</h3>\n    <ol class=\"node-ports\">\n        <li>Standard output\n            <dl class=\"message-properties\">\n                <dt>msg <span class=\"property-type\">object</span></dt>\n                <dd>the internal buffer of merged msg objects sent when all rule conditions have been satisfied.</dd>\n            </dl>\n        </li>\n    </ol>\n\n    <h3>References</h3>\n    <ul>\n        <li>You can find the official <a href=\"https://github.com/steveorevo/node-red-emerge\">emerge node public repository here</a></li>\n    </ul>\n    {{{helpdetails}}}\n</script>\n\n<script type=\"text/javascript\">\n    RED.nodes.registerType('{{node_name}}', {\n        category: '{{node_category}}',\n        color: '{{node_color}}',\n        defaults: {\n            name: {value:\"\"},\n            {{{defaults}}}\n        },\n        inputs: {{numinputs}},\n        outputs: {{numoutputs}},\n        icon: \"font-awesome/fa-{{{node_icon}}}\",\n        label: function() {\n            return this.name || \"{{node_name}}\";\n        },\n        labelStyle: function() {\n            return this.name ? \"node_label_italic\" : \"\";\n        },\n        oneditprepare: function() {\n            {{{oneditprepare}}}\n\n            // Hide ruleValue on empty/not empty\n            var outputCount = $(\"#node-input-outputs\").val(\"{}\");\n            console.log(outputCount);\n            this.grpRules.forEach(function(r, i) {\n                let ruleOperation = $('#node-input-grpRulesruleOperation' + String(i).padStart(2, '0'));\n                let ruleValue = $('#node-input-grpRulesruleValue' + String(i).padStart(2, '0'));\n                if (r.ruleOperation.indexOf('empty') != -1) {\n                    ruleValue.parent().hide();\n                }else{\n                    ruleValue.parent().show();\n                }\n                ruleOperation.on('change', function(e, t, v) {\n                    if (v.indexOf('empty') != -1) {\n                        ruleValue.parent().hide();\n                    }else{\n                        ruleValue.parent().show();\n                    }\n                });\n                $('#node-input-timeoutAction').on('change', function(e, t, v) {\n                    //if (v == '2') {\n                    //    node.outputs = 2;\n                    //}else{\n                    //    node.outputs = 1;\n                    //}\n                });\n            });\n        },\n        oneditresize: function() {\n            {{{oneditresize}}}        \n        },\n        oneditsave: function() {\n            {{{oneditsave}}}\n        },\n        oneditcancel: function() {\n            {{{oneditcancel}}}\n        }\n    });\n    {{{othercode}}}\n</script>\n",
+        "template": "<style>\n    {{{customcss}}}\n</style>\n<script type=\"text/html\" data-template-name=\"{{node_name}}\">\n    {{{inc_node_name}}}\n    <div id=\"node-props\" style=\"width: {{row_width}}px;\">\n        {{{edit_dialog}}}\n    </div><!--node-props-->\n</script>\n\n<script type=\"text/html\" data-help-name=\"{{node_name}}\">\n    <p>The <strong>emerge</strong> node merges incoming msg objects into an internal buffer\n    until all matching predefined rules have been met. The merged buffer msg then 'emerges'\n    (is sent) to the output when all rules have been satisfied; after which the buffer is \n    cleared and merging new incoming msg objects and checking rules is resumed.</p>\n\n    <h3>Rules</h3>\n    <p>The rules list allows you to specify conditions to be satisfied before the internally buffered msg\n    is sent. For example, you can watch the msg object for specific properties to be present before \n    sending the msg along; this is useful if you have multiple asynchronous operations fetching data\n    that you need to submit to a node as one msg.</p>\n    <p>You are not limited to watching msg properties; the rules list can also check for flow and global properties\n    to have specific conditions before sending the msg buffer along.</p>\n    \n    <p><strong><i>Note:</strong> rules are only\n    checked when a msg is received. Changes to global and flow values can be used to allow or prevent the rules\n    from sending a msg but cannot trigger the message buffer to send.</i></p>\n    \n    <p>Rule logic conditions are as follows:</p>\n\n    <ul>\n        <li><strong>==</strong> - A property is equal to value on the right. </li>\n        <li><strong>!=</strong> - A property is not equal to the value on the right. </li>\n        <li><strong>&gt;</strong> - A property is greater than the value on the right.</li>\n        <li><strong>&lt;</strong> - A property is less than the value on the right. </li>\n        <li><strong>empty</strong> - A property is empty (null, undefined, or an empty string).</li>\n        <li><strong>not empty</strong> - A property is not empty (null, undefined, or an empty string). </li>\n        <li><strong>size is ==</strong> - A property's length (string or number of array elements) is equal to the value on the right. </li>\n        <li><strong>size is &gt;</strong> - A property's length (string or number of array elements) is greater than the value on the right.  </li>\n        <li><strong>size is &lt;</strong> - A property's length (string or number of array elements) is less than the value on the right.  </li>\n    </ul>\n    \n    <h3>Timeout Action</h3>\n    <p>An optional timeout behavior can be set in seconds and determine the maximum number of seconds past since the node\n        received its last msg. The behavior of the timeout can be set with\n    the timeout action property:</p>\n    <ul>\n        <li><strong>Ignore timeout</strong> - No timeout action.</li>\n        <li><strong>Clear and restart</strong> - Clear the internal msg buffer and restart merging incoming msg objects.</li>\n        <li><strong>Trigger catch node</strong> - Trigger catch nodes with the current msg buffer serialized to the error.message property, before clearing and restarting merges.</li>\n    </ul>\n\n    <h3>Outputs</h3>\n    <ol class=\"node-ports\">\n        <li>Standard output\n            <dl class=\"message-properties\">\n                <dt>msg <span class=\"property-type\">object</span></dt>\n                <dd>the internal buffer of merged msg objects sent when all rule conditions have been satisfied.</dd>\n            </dl>\n        </li>\n    </ol>\n\n    <h3>References</h3>\n    <ul>\n        <li>You can find the official <a href=\"https://github.com/steveorevo/node-red-emerge\">emerge node public repository here</a></li>\n    </ul>\n    {{{helpdetails}}}\n</script>\n\n<script type=\"text/javascript\">\n    RED.nodes.registerType('{{node_name}}', {\n        category: '{{node_category}}',\n        color: '{{node_color}}',\n        defaults: {\n            name: {value:\"\"},\n            {{{defaults}}}\n        },\n        inputs: {{numinputs}},\n        outputs: {{numoutputs}},\n        icon: \"font-awesome/fa-{{{node_icon}}}\",\n        label: function() {\n            return this.name || \"{{node_name}}\";\n        },\n        labelStyle: function() {\n            return this.name ? \"node_label_italic\" : \"\";\n        },\n        oneditprepare: function() {\n            {{{oneditprepare}}}\n\n            // Hide ruleValue on empty/not empty\n            var outputCount = $(\"#node-input-outputs\").val(\"{}\");\n            console.log(outputCount);\n            this.grpRules.forEach(function(r, i) {\n                let ruleOperation = $('#node-input-grpRulesruleOperation' + String(i).padStart(2, '0'));\n                let ruleValue = $('#node-input-grpRulesruleValue' + String(i).padStart(2, '0'));\n                if (r.ruleOperation.indexOf('empty') != -1) {\n                    ruleValue.parent().hide();\n                }else{\n                    ruleValue.parent().show();\n                }\n                ruleOperation.on('change', function(e, t, v) {\n                    if (v.indexOf('empty') != -1) {\n                        ruleValue.parent().hide();\n                    }else{\n                        ruleValue.parent().show();\n                    }\n                });\n            });\n        },\n        oneditresize: function() {\n            {{{oneditresize}}}        \n        },\n        oneditsave: function() {\n            {{{oneditsave}}}\n        },\n        oneditcancel: function() {\n            {{{oneditcancel}}}\n        }\n    });\n    {{{othercode}}}\n</script>\n",
         "output": "str",
         "x": 380,
-        "y": 340,
+        "y": 360,
         "wires": [
             [
                 "ecca5c39ed4167f7"
@@ -2748,16 +2748,16 @@
     {
         "id": "ecca5c39ed4167f7",
         "type": "template",
-        "z": "e20b76180a839224",
+        "z": "0f1abd4ab71b7474",
         "name": "nodemakerjs",
         "field": "nodemakerjs",
         "fieldType": "msg",
         "format": "javascript",
         "syntax": "mustache",
-        "template": "module.exports = function(RED) {\n    function {{node_name}}(config) {\n        RED.nodes.createNode(this,config);\n        var node = this;\n\n        // Access nested objects\n        const getNestedObject = (nestedObj, pathArr) => {\n            return pathArr.split('.').reduce((obj, key) =>\n                (obj && obj[key] !== 'undefined') ? obj[key] : undefined, nestedObj);\n        }\n        \n        // String manipulation functions\n        String.prototype.delLeftMost = function (sFind) {\n            for (var i = 0; i < this.length; i = i + 1) {\n                var f = this.indexOf(sFind, i);\n                if (f != -1) {\n                    return this.substring(f + sFind.length, f + sFind.length + this.length);\n                    break;\n                }\n            }\n            return this;\n        };\n        String.prototype.getLeftMost = function (sFind) {\n            for (var i = 0; i < this.length; i = i + 1) {\n                var f = this.indexOf(sFind, i);\n                if (f != -1) {\n                    return this.substring(0, f);\n                    break;\n                }\n            }\n            return this;\n        };\n        function isObject(item) {\n            return (item && typeof item === 'object' && !Array.isArray(item));\n        }\n        function mergeDeep(target, source) {\n            let output = Object.assign({}, target);\n            if (isObject(target) && isObject(source)) {\n                Object.keys(source).forEach(key => {\n                    if (isObject(source[key])) {\n                        if (!(key in target))\n                            Object.assign(output, { [key]: source[key] });\n                        else\n                            output[key] = mergeDeep(target[key], source[key]);\n                    } else {\n                        Object.assign(output, { [key]: source[key] });\n                    }\n                });\n            }\n            return output;\n        }\n\n        node.on('input', function(msg, send, done) {\n\n            // Merge the incoming msg into msgBuffer\n            let nodeContext = node.context();\n            let msgBuffer = nodeContext.get('msgBuffer');\n            if (msgBuffer == undefined) {\n                msgBuffer = {};\n            }\n            msgBuffer = mergeDeep(msgBuffer, msg);\n            nodeContext.set('msgBuffer', msgBuffer);\n            \n            // Check if all rules are valid\n            let rulePass = false;\n            if (config.grpRules == undefined) return;\n            for (let i = 0; i < config.grpRules.length; i++) {\n                let r = config.grpRules[i];\n                let flowContext = node.context().flow;\n                let globalContext = node.context().global;\n                rulePass = false;\n                \n                // Get the property value to compare\n                let rulePropertyValue = null;\n                switch(r.rulePropertyType) {\n                    case \"msg\":\n                        rulePropertyValue = getNestedObject(msgBuffer, r.ruleProperty);\n                        break;\n                    case \"flow\":\n                        if (r.ruleProperty.indexOf(\".\") == -1) {\n                            rulePropertyValue = flowContext.get(r.ruleProperty);\n                        }else{\n                            let parent = r.ruleProperty.getLeftMost('.');\n                            let offspring = r.ruleProperty.delLeftMost('.');\n                            rulePropertyValue = flowContext.get(parent);\n                            rulePropertyValue = getNestedObject(rulePropertyValue, offspring);\n                        }\n                        break;\n                    case \"global\":\n                        if (r.ruleProperty.indexOf(\".\") == -1) {\n                            rulePropertyValue = globalContext.get(r.ruleProperty);\n                        } else {\n                            let parent = r.ruleProperty.getLeftMost('.');\n                            let offspring = r.ruleProperty.delLeftMost('.');\n                            rulePropertyValue = globalContext.get(parent);\n                            rulePropertyValue = getNestedObject(rulePropertyValue, offspring);\n                        }\n                        break;\n                }\n                if (rulePropertyValue == undefined) break;\n\n                // Get the comparative rule value\n                let ruleCompareValue = null;\n                switch(r.ruleValueType) {\n                    case \"msg\":\n                        ruleCompareValue = getNestedObject(msgBuffer, r.ruleValue);\n                        break;\n                    case \"flow\":\n                        if (r.ruleValue.indexOf(\".\") == -1) {\n                            ruleCompareValue = flowContext.get(r.ruleValue);\n                        }else{\n                            let parent = r.ruleValue.getLeftMost('.');\n                            let offspring = r.ruleValue.delLeftMost('.');\n                            ruleCompareValue = flowContext.get(parent);\n                            ruleCompareValue = getNestedObject(ruleCompareValue, offspring);\n                        }\n                        break;\n                    case \"global\":\n                        if (r.ruleValue.indexOf(\".\") == -1) {\n                            ruleCompareValue = globalContext.get(r.ruleValue);\n                        } else {\n                            let parent = r.ruleValue.getLeftMost('.');\n                            let offspring = r.ruleValue.delLeftMost('.');\n                            ruleCompareValue = globalContext.get(parent);\n                            ruleCompareValue = getNestedObject(ruleCompareValue, offspring);\n                        }\n                        break;\n                    case \"str\":\n                        ruleCompareValue = r.ruleValue;\n                        break;\n                    case \"num\":\n                        ruleCompareValue = Number(r.ruleValue);\n                        break;\n                    case \"bool\":\n                        ruleCompareValue = (r.ruleValue == 'true');\n                        break;\n                }\n                if (ruleCompareValue == undefined) break;\n\n                // Do the comparative logic\n                switch(r.ruleOperation) {\n                    case \"==\":\n                        if (rulePropertyValue == ruleCompareValue) rulePass = true;\n                        break;\n                    case \"!=\":\n                        if (rulePropertyValue != ruleCompareValue) rulePass = true;\n                        break;\n                    case \"gt\":\n                        if (rulePropertyValue > ruleCompareValue) rulePass = true;\n                        break;\n                    case \"lt\":\n                        if (rulePropertyValue < ruleCompareValue) rulePass = true;\n                        break;\n                    case \"empty\":\n                        if (!rulePropertyValue) rulePass = true;\n                        break;\n                    case \"!empty\":\n                        if (rulePropertyValue) rulePass = true;\n                        break;\n                    case \"sz=\":\n                        if (rulePropertyValue.length == Number(ruleCompareValue)) rulePass = true;\n                        break;\n                    case \"szgt\":\n                        if (rulePropertyValue.length > Number(ruleCompareValue)) rulePass = true;\n                        break;\n                    case \"szlt\":\n                        if (rulePropertyValue.length < Number(ruleCompareValue)) rulePass = true;\n                        break;\n                }\n                \n                // Check if rules have failed\n                if (rulePass == false ) break;\n            }\n\n            // Reset any timeout on msg arrival \n            let msgTimeout = nodeContext.get('msgTimeout');\n            if (config.timeoutAction != 0) {\n                if (msgTimeout != undefined) {\n                    clearTimeout(msgTimeout);\n                }\n                msgTimeout = setTimeout(function () {\n                    msg = msgBuffer;\n                    nodeContext.set('msgBuffer', {});\n                    if (config.timeoutAction == 2) {\n                        done(msg);\n                    }\n                }, config.rulesTimeout * 1000);\n                nodeContext.set('msgTimeout', msgTimeout);\n            }\n\n            // Send msg on its way\n            if (rulePass) {\n                if (msgTimeout != undefined) {\n                    clearTimeout(msgTimeout);\n                }\n                msg = msgBuffer;\n                nodeContext.set('msgBuffer', {});\n                send(msg);\n            }\n        });\n        node.on('close', function () {\n            // Clean up any remaining timeout \n            let nodeContext = node.context();\n            let msgTimeout = nodeContext.get('msgTimeout');\n            if (msgTimeout != undefined) {\n                clearTimeout(msgTimeout);\n            }\n        });\n        {{{runtimecode}}}\n    }\n    RED.nodes.registerType('{{node_name}}', {{node_name}});\n}",
+        "template": "module.exports = function(RED) {\n    function {{node_name}}(config) {\n        RED.nodes.createNode(this,config);\n        var node = this;\n\n        // Access nested objects\n        const getNestedObject = (nestedObj, pathArr) => {\n            return pathArr.split('.').reduce((obj, key) =>\n                (obj && obj[key] !== 'undefined') ? obj[key] : undefined, nestedObj);\n        }\n        \n        // String manipulation functions\n        String.prototype.delLeftMost = function (sFind) {\n            for (var i = 0; i < this.length; i = i + 1) {\n                var f = this.indexOf(sFind, i);\n                if (f != -1) {\n                    return this.substring(f + sFind.length, f + sFind.length + this.length);\n                    break;\n                }\n            }\n            return this;\n        };\n        String.prototype.getLeftMost = function (sFind) {\n            for (var i = 0; i < this.length; i = i + 1) {\n                var f = this.indexOf(sFind, i);\n                if (f != -1) {\n                    return this.substring(0, f);\n                    break;\n                }\n            }\n            return this;\n        };\n        function isObject(item) {\n            return (item && typeof item === 'object' && !Array.isArray(item));\n        }\n        function mergeDeep(target, source) {\n            let output = Object.assign({}, target);\n            if (isObject(target) && isObject(source)) {\n                Object.keys(source).forEach(key => {\n                    if (isObject(source[key])) {\n                        if (!(key in target))\n                            Object.assign(output, { [key]: source[key] });\n                        else\n                            output[key] = mergeDeep(target[key], source[key]);\n                    } else {\n                        Object.assign(output, { [key]: source[key] });\n                    }\n                });\n            }else{\n                Object.assign(output, source);\n            }\n            return output;\n        }\n\n        node.on('input', function(msg, send, done) {\n\n            // Merge the incoming msg into msgBuffer\n            let nodeContext = node.context();\n            let msgBuffer = nodeContext.get('msgBuffer');\n            if (msgBuffer == undefined) {\n                msgBuffer = {};\n            }\n            msgBuffer = mergeDeep(msgBuffer, msg);\n            nodeContext.set('msgBuffer', msgBuffer);\n            \n            // Check if all rules are valid\n            let rulePass = false;\n            if (config.grpRules == undefined) return;\n            for (let i = 0; i < config.grpRules.length; i++) {\n                let r = config.grpRules[i];\n                let flowContext = node.context().flow;\n                let globalContext = node.context().global;\n                rulePass = false;\n                \n                // Get the property value to compare\n                let rulePropertyValue = null;\n                switch(r.rulePropertyType) {\n                    case \"msg\":\n                        rulePropertyValue = getNestedObject(msgBuffer, r.ruleProperty);\n                        break;\n                    case \"flow\":\n                        if (r.ruleProperty.indexOf(\".\") == -1) {\n                            rulePropertyValue = flowContext.get(r.ruleProperty);\n                        }else{\n                            let parent = r.ruleProperty.getLeftMost('.');\n                            let offspring = r.ruleProperty.delLeftMost('.');\n                            rulePropertyValue = flowContext.get(parent);\n                            rulePropertyValue = getNestedObject(rulePropertyValue, offspring);\n                        }\n                        break;\n                    case \"global\":\n                        if (r.ruleProperty.indexOf(\".\") == -1) {\n                            rulePropertyValue = globalContext.get(r.ruleProperty);\n                        } else {\n                            let parent = r.ruleProperty.getLeftMost('.');\n                            let offspring = r.ruleProperty.delLeftMost('.');\n                            rulePropertyValue = globalContext.get(parent);\n                            rulePropertyValue = getNestedObject(rulePropertyValue, offspring);\n                        }\n                        break;\n                }\n                if (rulePropertyValue == undefined) break;\n\n                // Get the comparative rule value\n                let ruleCompareValue = null;\n                switch(r.ruleValueType) {\n                    case \"msg\":\n                        ruleCompareValue = getNestedObject(msgBuffer, r.ruleValue);\n                        break;\n                    case \"flow\":\n                        if (r.ruleValue.indexOf(\".\") == -1) {\n                            ruleCompareValue = flowContext.get(r.ruleValue);\n                        }else{\n                            let parent = r.ruleValue.getLeftMost('.');\n                            let offspring = r.ruleValue.delLeftMost('.');\n                            ruleCompareValue = flowContext.get(parent);\n                            ruleCompareValue = getNestedObject(ruleCompareValue, offspring);\n                        }\n                        break;\n                    case \"global\":\n                        if (r.ruleValue.indexOf(\".\") == -1) {\n                            ruleCompareValue = globalContext.get(r.ruleValue);\n                        } else {\n                            let parent = r.ruleValue.getLeftMost('.');\n                            let offspring = r.ruleValue.delLeftMost('.');\n                            ruleCompareValue = globalContext.get(parent);\n                            ruleCompareValue = getNestedObject(ruleCompareValue, offspring);\n                        }\n                        break;\n                    case \"str\":\n                        ruleCompareValue = r.ruleValue;\n                        break;\n                    case \"num\":\n                        ruleCompareValue = Number(r.ruleValue);\n                        break;\n                    case \"bool\":\n                        ruleCompareValue = (r.ruleValue == 'true');\n                        break;\n                }\n                if (ruleCompareValue == undefined) break;\n\n                // Do the comparative logic\n                switch(r.ruleOperation) {\n                    case \"==\":\n                        if (rulePropertyValue == ruleCompareValue) rulePass = true;\n                        break;\n                    case \"!=\":\n                        if (rulePropertyValue != ruleCompareValue) rulePass = true;\n                        break;\n                    case \"gt\":\n                        if (rulePropertyValue > ruleCompareValue) rulePass = true;\n                        break;\n                    case \"lt\":\n                        if (rulePropertyValue < ruleCompareValue) rulePass = true;\n                        break;\n                    case \"empty\":\n                        if (!rulePropertyValue) rulePass = true;\n                        break;\n                    case \"!empty\":\n                        if (rulePropertyValue) rulePass = true;\n                        break;\n                    case \"sz=\":\n                        if (rulePropertyValue.length == Number(ruleCompareValue)) rulePass = true;\n                        break;\n                    case \"szgt\":\n                        if (rulePropertyValue.length > Number(ruleCompareValue)) rulePass = true;\n                        break;\n                    case \"szlt\":\n                        if (rulePropertyValue.length < Number(ruleCompareValue)) rulePass = true;\n                        break;\n                }\n                \n                // Check if rules have failed\n                if (rulePass == false ) break;\n            }\n\n            // Reset any timeout on msg arrival \n            let msgTimeout = nodeContext.get('msgTimeout');\n            if (config.timeoutAction != 0) {\n                if (msgTimeout != undefined) {\n                    clearTimeout(msgTimeout);\n                }\n                msgTimeout = setTimeout(function () {\n                    msg = nodeContext.get('msgBuffer');\n                    nodeContext.set('msgBuffer', {});\n                    if (config.timeoutAction == 2) {\n                        done(JSON.stringify(msg, null, 4));\n                    }\n                }, config.rulesTimeout * 1000);\n                nodeContext.set('msgTimeout', msgTimeout);\n            }\n\n            // Send msg on its way\n            if (rulePass) {\n                if (msgTimeout != undefined) {\n                    clearTimeout(msgTimeout);\n                }\n                msg = msgBuffer;\n                nodeContext.set('msgBuffer', {});\n                send(msg);\n            }\n        });\n        node.on('close', function () {\n            // Clean up any remaining timeout \n            let nodeContext = node.context();\n            let msgTimeout = nodeContext.get('msgTimeout');\n            if (msgTimeout != undefined) {\n                clearTimeout(msgTimeout);\n            }\n        });\n        {{{runtimecode}}}\n    }\n    RED.nodes.registerType('{{node_name}}', {{node_name}});\n}",
         "output": "str",
         "x": 370,
-        "y": 400,
+        "y": 420,
         "wires": [
             [
                 "aef239a85e3bb422"
