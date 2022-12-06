@@ -176,7 +176,7 @@
     <ul>
         <li><strong>Ignore timeout</strong> - No timeout action.</li>
         <li><strong>Clear and restart</strong> - Clear the internal msg buffer and restart merging incoming msg objects.</li>
-        <li><strong>Trigger catch node</strong> - Trigger catch nodes with the current msg buffer before clearing it and restart merging.</li>
+        <li><strong>Trigger catch node</strong> - Trigger catch nodes with the current msg buffer serialized to the error.message property, before clearing and restarting merges.</li>
     </ul>
 
     <h3>Outputs</h3>
@@ -397,13 +397,6 @@
                     }else{
                         ruleValue.parent().show();
                     }
-                });
-                $('#node-input-timeoutAction').on('change', function(e, t, v) {
-                    //if (v == '2') {
-                    //    node.outputs = 2;
-                    //}else{
-                    //    node.outputs = 1;
-                    //}
                 });
             });
         },

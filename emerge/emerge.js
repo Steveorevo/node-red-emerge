@@ -46,6 +46,8 @@ module.exports = function(RED) {
                         Object.assign(output, { [key]: source[key] });
                     }
                 });
+            }else{
+                Object.assign(output, source);
             }
             return output;
         }
@@ -179,10 +181,10 @@ module.exports = function(RED) {
                     clearTimeout(msgTimeout);
                 }
                 msgTimeout = setTimeout(function () {
-                    msg = msgBuffer;
+                    msg = nodeContext.get('msgBuffer');
                     nodeContext.set('msgBuffer', {});
                     if (config.timeoutAction == 2) {
-                        done(msg);
+                        done(JSON.stringify(msg, null, 4));
                     }
                 }, config.rulesTimeout * 1000);
                 nodeContext.set('msgTimeout', msgTimeout);
